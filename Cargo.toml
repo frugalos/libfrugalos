@@ -1,0 +1,22 @@
+[package]
+name = "libfrugalos"
+version = "0.2.0"
+authors = ["The FrugalOS Developers"]
+description = "This crate defines the public interface of `frugalos` for related tools"
+homepage = "https://github.com/frugalos/libfrugalos"
+repository = "https://github.com/frugalos/libfrugalos"
+readme = "README.md"
+license = "MIT"
+
+[badges]
+travis-ci = {repository = "frugalos/libfrugalos"}
+
+[dependencies]
+bytecodec = { version = "0.4", features = ["bincode_codec"] }
+fibers = "0.1"
+fibers_rpc = "0.2"
+futures = "0.1"
+libc = "0.2"
+serde = "1"
+serde_derive = "1"
+trackable = { version = "0.2", features = ["serialize"] }
