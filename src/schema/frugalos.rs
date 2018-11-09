@@ -5,6 +5,7 @@ use std::ops::Range;
 use std::time::Duration;
 
 use entity::bucket::BucketId;
+use entity::device::{DeviceId, PhysicalDeviceInspection};
 use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
@@ -227,6 +228,27 @@ pub struct PutObjectRequest {
 pub struct SegmentRequest {
     pub bucket_id: BucketId,
     pub segment: u16,
+}
+
+/// デバイス単位でのRPC要求。
+#[allow(missing_docs)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeviceRequest {
+    pub device_id: DeviceId,
+}
+
+/// Inspect Physical Device
+#[derive(Debug)]
+pub struct InspectPhysicalDeviceRpc;
+impl Call for InspectPhysicalDeviceRpc {
+    const ID: ProcedureId = ProcedureId(0x000b_0001);
+    const NAME: &'static str = "frugalos.device.inspect_physical_device";
+    type Req = DeviceRequest;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type Res = Result<PhysicalDeviceInspection>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
 /// プロセス停止RPC。

@@ -8,6 +8,7 @@ use std::time::Duration;
 
 use super::Response;
 use entity::bucket::BucketId;
+use entity::device::{DeviceId, PhysicalDeviceInspection};
 use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
@@ -175,6 +176,18 @@ impl Client {
         };
         Response(
             frugalos::DeleteObjectsByPrefixRpc::client(&self.rpc_service)
+                .call(self.server, request),
+        )
+    }
+
+    /// Executes `InspectPhysicalDeviceRpc`.
+    pub fn inspect_physical_device(
+        &self,
+        device_id: DeviceId,
+    ) -> impl Future<Item = PhysicalDeviceInspection, Error = Error> {
+        let request = frugalos::DeviceRequest { device_id };
+        Response(
+            frugalos::InspectPhysicalDeviceRpc::client(&self.rpc_service)
                 .call(self.server, request),
         )
     }
