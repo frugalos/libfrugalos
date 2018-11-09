@@ -1,4 +1,6 @@
 //! オブジェクト関連のエンティティ定義。
+use std::str::FromStr;
+use Error;
 
 // FIXME: 構造体にする
 /// オブジェクトのID。
@@ -9,6 +11,18 @@ pub type ObjectId = String;
     Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
 )]
 pub struct ObjectVersion(pub u64);
+
+impl FromStr for ObjectVersion {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        track!(
+            s.parse::<u64>()
+                .map(|n| ObjectVersion(n))
+                .map_err(Error::from)
+        )
+    }
+}
 
 /// メタデータオブジェクトの接頭辞
 #[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

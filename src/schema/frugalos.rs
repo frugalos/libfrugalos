@@ -1,10 +1,12 @@
 //! frugalosの公開API系RPCのスキーマ定義。
 use bytecodec::bincode_codec::{BincodeDecoder, BincodeEncoder};
 use fibers_rpc::{Call, ProcedureId};
+use std::collections::BTreeSet;
 use std::ops::Range;
 use std::time::Duration;
 
 use entity::bucket::BucketId;
+use entity::device::DeviceId;
 use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
@@ -171,6 +173,22 @@ impl Call for DeleteObjectsByPrefixRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
+/// A RPC for deleting objects physically.
+#[derive(Debug)]
+pub struct DeleteObjectSetFromDeviceRpc;
+impl Call for DeleteObjectSetFromDeviceRpc {
+    const ID: ProcedureId = ProcedureId(0x0009_000a);
+    const NAME: &'static str = "frugalos.object.delete_object_set_from_device";
+
+    type Req = DeleteObjectSetFromDeviceRequest;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+}
+
 /// オブジェクト単位のRPC要求。
 #[allow(missing_docs)]
 #[derive(Debug, Serialize, Deserialize)]
@@ -227,6 +245,19 @@ pub struct PutObjectRequest {
 pub struct SegmentRequest {
     pub bucket_id: BucketId,
     pub segment: u16,
+}
+
+/// This struct represents how to delete objects from a device at once.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteObjectSetFromDeviceRequest {
+    /// a bucket which owns the objects
+    pub bucket_id: BucketId,
+
+    /// a device which may own the objects
+    pub device_id: DeviceId,
+
+    /// objects to be deleted
+    pub object_ids: BTreeSet<ObjectId>,
 }
 
 /// プロセス停止RPC。

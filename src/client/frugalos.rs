@@ -2,12 +2,14 @@
 use fibers_rpc::client::ClientServiceHandle as RpcServiceHandle;
 use fibers_rpc::Call as RpcCall;
 use futures::Future;
+use std::collections::BTreeSet;
 use std::net::SocketAddr;
 use std::ops::Range;
 use std::time::Duration;
 
 use super::Response;
 use entity::bucket::BucketId;
+use entity::device::DeviceId;
 use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
@@ -176,6 +178,25 @@ impl Client {
         Response(
             frugalos::DeleteObjectsByPrefixRpc::client(&self.rpc_service)
                 .call(self.server, request),
+        )
+    }
+
+    /// Executes `DeleteObjectSetFromDeviceRpc`.
+    pub fn delete_from_device_by_object_ids(
+        &self,
+        bucket_id: BucketId,
+        device_id: DeviceId,
+        object_ids: BTreeSet<ObjectId>,
+    ) -> impl Future<Item = (), Error = Error> {
+        Response(
+            frugalos::DeleteObjectSetFromDeviceRpc::client(&self.rpc_service).call(
+                self.server,
+                frugalos::DeleteObjectSetFromDeviceRequest {
+                    bucket_id,
+                    device_id,
+                    object_ids,
+                },
+            ),
         )
     }
 
