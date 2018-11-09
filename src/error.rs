@@ -16,6 +16,11 @@ impl From<std::ffi::NulError> for Error {
         ErrorKind::Other.cause(f).into()
     }
 }
+impl From<std::num::ParseIntError> for Error {
+    fn from(f: std::num::ParseIntError) -> Self {
+        ErrorKind::InvalidInput.cause(f).into()
+    }
+}
 
 /// エラーの種類。
 #[allow(missing_docs)]

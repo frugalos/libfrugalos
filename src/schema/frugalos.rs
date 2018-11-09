@@ -1,6 +1,7 @@
 //! frugalosの公開API系RPCのスキーマ定義。
 use bytecodec::bincode_codec::{BincodeDecoder, BincodeEncoder};
 use fibers_rpc::{Call, ProcedureId};
+use std::collections::BTreeSet;
 use std::ops::Range;
 use std::time::Duration;
 
@@ -181,6 +182,16 @@ pub struct ObjectRequest {
     pub expect: Expect,
 }
 
+/// A request for a rpc by a set of objects.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ObjectSetRequest {
+    /// a bucket which owns the target objects
+    pub bucket_id: BucketId,
+
+    /// objects to be processed
+    pub object_ids: BTreeSet<ObjectId>,
+}
+
 /// バージョン単位のRPC要求。
 #[allow(missing_docs)]
 #[derive(Debug, Serialize, Deserialize)]
@@ -253,6 +264,22 @@ impl Call for TakeSnapshotRpc {
     const NAME: &'static str = "frugalos.ctrl.take_snapshot";
 
     type Req = ();
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+}
+
+/// A RPC for repairing objects.
+#[derive(Debug)]
+pub struct RepairObjectRpc;
+impl Call for RepairObjectRpc {
+    const ID: ProcedureId = ProcedureId(0x000a_0002);
+    const NAME: &'static str = "frugalos.ctrl.repair_object";
+
+    type Req = ObjectSetRequest;
     type ReqDecoder = BincodeDecoder<Self::Req>;
     type ReqEncoder = BincodeEncoder<Self::Req>;
 

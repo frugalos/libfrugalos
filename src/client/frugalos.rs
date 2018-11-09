@@ -2,6 +2,7 @@
 use fibers_rpc::client::ClientServiceHandle as RpcServiceHandle;
 use fibers_rpc::Call as RpcCall;
 use futures::Future;
+use std::collections::BTreeSet;
 use std::net::SocketAddr;
 use std::ops::Range;
 use std::time::Duration;
@@ -177,6 +178,21 @@ impl Client {
             frugalos::DeleteObjectsByPrefixRpc::client(&self.rpc_service)
                 .call(self.server, request),
         )
+    }
+
+    /// Executes `RepairObjectRpc`.
+    pub fn repair_by_ids(
+        &self,
+        bucket_id: BucketId,
+        object_ids: BTreeSet<ObjectId>,
+    ) -> impl Future<Item = (), Error = Error> {
+        Response(frugalos::RepairObjectRpc::client(&self.rpc_service).call(
+            self.server,
+            frugalos::ObjectSetRequest {
+                bucket_id,
+                object_ids,
+            },
+        ))
     }
 
     /// `StopRpc`を実行する。
