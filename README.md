@@ -1,5 +1,5 @@
-frugalos_api
-============
+libfrugalos
+===========
 
 [![Crates.io: libfrugalos](https://img.shields.io/crates/v/libfrugalos.svg)](https://crates.io/crates/libfrugalos)
 [![Documentation](https://docs.rs/libfrugalos/badge.svg)](https://docs.rs/libfrugalos)
