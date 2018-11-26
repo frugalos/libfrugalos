@@ -173,7 +173,7 @@ impl Call for DeleteObjectsByPrefixRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
-/// A RPC for deleting objects physically.
+/// An RPC for deleting objects physically.
 #[derive(Debug)]
 pub struct DeleteObjectSetFromDeviceRpc;
 impl Call for DeleteObjectSetFromDeviceRpc {
