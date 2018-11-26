@@ -237,7 +237,7 @@ pub struct DeviceRequest {
     pub device_id: DeviceId,
 }
 
-/// Inspect Physical Device
+/// An RPC for inspecting a physical device.
 #[derive(Debug)]
 pub struct InspectPhysicalDeviceRpc;
 impl Call for InspectPhysicalDeviceRpc {

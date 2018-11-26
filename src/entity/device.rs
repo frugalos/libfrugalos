@@ -249,12 +249,12 @@ impl FileDevice {
     }
 }
 
-/// Inspects a physical device.
+/// This struct indicates an inspection of a physical device.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PhysicalDeviceInspection {
-    /// the device id
+    /// The device id.
     pub device_id: DeviceId,
-    /// Opaque data in a device.
+    /// Opaque data in the device.
     /// TODO treats this field as a byte sequence.
     pub data: Vec<String>,
 }
