@@ -250,13 +250,13 @@ pub struct SegmentRequest {
 /// This struct represents how to delete objects from a device at once.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteObjectSetFromDeviceRequest {
-    /// a bucket which owns the objects
+    /// A bucket may own the objects.
     pub bucket_id: BucketId,
 
-    /// a device which may own the objects
+    /// A device may own the objects.
     pub device_id: DeviceId,
 
-    /// objects to be deleted
+    /// The objects will be deleted.
     pub object_ids: BTreeSet<ObjectId>,
 }
 
