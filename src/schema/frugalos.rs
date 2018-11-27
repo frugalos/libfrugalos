@@ -182,13 +182,13 @@ pub struct ObjectRequest {
     pub expect: Expect,
 }
 
-/// A request for a rpc by a set of objects.
+/// A request for an RPC by a set of objects.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ObjectSetRequest {
-    /// a bucket which owns the target objects
+    /// A bucket owns the target objects.
     pub bucket_id: BucketId,
 
-    /// objects to be processed
+    /// Objects to be processed.
     pub object_ids: BTreeSet<ObjectId>,
 }
 
@@ -272,7 +272,7 @@ impl Call for TakeSnapshotRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
-/// A RPC for repairing objects.
+/// An RPC for repairing objects.
 #[derive(Debug)]
 pub struct RepairObjectRpc;
 impl Call for RepairObjectRpc {
