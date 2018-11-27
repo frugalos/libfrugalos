@@ -16,11 +16,7 @@ impl FromStr for ObjectVersion {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        track!(
-            s.parse::<u64>()
-                .map(|n| ObjectVersion(n))
-                .map_err(Error::from)
-        )
+        track!(s.parse::<u64>().map(ObjectVersion).map_err(Error::from))
     }
 }
 
