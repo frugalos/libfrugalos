@@ -11,6 +11,9 @@ use {Error, ErrorKind, Result};
 /// デバイスのID。
 pub type DeviceId = String;
 
+/// The sequence number of devices, which is increased monotonically.
+pub type DeviceNo = u32;
+
 /// デバイスの内容の要約。
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeviceSummary {
