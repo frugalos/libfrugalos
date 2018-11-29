@@ -9,6 +9,7 @@ use std::time::Duration;
 
 use super::Response;
 use entity::bucket::BucketId;
+use entity::device::DeviceId;
 use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
@@ -193,6 +194,25 @@ impl Client {
                 object_ids,
             },
         ))
+    }
+
+    /// Executes `DeleteObjectSetFromDeviceRpc`.
+    pub fn delete_from_device_by_object_ids(
+        &self,
+        bucket_id: BucketId,
+        device_id: DeviceId,
+        object_ids: BTreeSet<ObjectId>,
+    ) -> impl Future<Item = (), Error = Error> {
+        Response(
+            frugalos::DeleteObjectSetFromDeviceRpc::client(&self.rpc_service).call(
+                self.server,
+                frugalos::DeleteObjectSetFromDeviceRequest {
+                    bucket_id,
+                    device_id,
+                    object_ids,
+                },
+            ),
+        )
     }
 
     /// `StopRpc`を実行する。

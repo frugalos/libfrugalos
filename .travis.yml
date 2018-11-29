@@ -1,21 +1,46 @@
 language: rust
 
-rust:
-  - stable
-  - beta
-  - nightly
-
-before_script:
-  - rustup component add clippy-preview
-
-script:
-  - cargo test
-  - cargo clippy
-
 matrix:
+  include:
+  - name: "stable"
+    rust: stable
+    before_script: rustup component add clippy-preview
+    script:
+      - cargo test
+      - cargo clippy
+    env: RUSTFLAGS="-D warnings"
+
+  - name: "beta test"
+    rust: beta
+    script: cargo test
+
+  - name: "beta build"
+    rust: beta
+    script: cargo build
+    env: RUSTFLAGS="-D warnings"
+
+  - name: "beta clippy"
+    rust: beta
+    before_script: rustup component add clippy-preview
+    script: cargo clippy
+    env: RUSTFLAGS="-D warnings"
+
+  - name: "nightly test"
+    rust: nightly
+    script: cargo test
+
+  - name: "nightly build"
+    rust: nightly
+    script: cargo build
+    env: RUSTFLAGS="-D warnings"
+
+  - name: "nightly clippy"
+    rust: nightly
+    before_script: rustup component add clippy-preview
+    script: cargo clippy
+    env: RUSTFLAGS="-D warnings"
+
   allow_failures:
     - rust: nightly
-
-env:
-  global:
-  - RUSTFLAGS="-D warnings"
+    - name: "beta build"
+    - name: "beta clippy"

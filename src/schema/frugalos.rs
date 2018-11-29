@@ -6,6 +6,7 @@ use std::ops::Range;
 use std::time::Duration;
 
 use entity::bucket::BucketId;
+use entity::device::DeviceId;
 use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
@@ -172,6 +173,22 @@ impl Call for DeleteObjectsByPrefixRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
+/// An RPC for deleting objects physically.
+#[derive(Debug)]
+pub struct DeleteObjectSetFromDeviceRpc;
+impl Call for DeleteObjectSetFromDeviceRpc {
+    const ID: ProcedureId = ProcedureId(0x0009_000a);
+    const NAME: &'static str = "frugalos.object.delete_object_set_from_device";
+
+    type Req = DeleteObjectSetFromDeviceRequest;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+}
+
 /// オブジェクト単位のRPC要求。
 #[allow(missing_docs)]
 #[derive(Debug, Serialize, Deserialize)]
@@ -238,6 +255,19 @@ pub struct PutObjectRequest {
 pub struct SegmentRequest {
     pub bucket_id: BucketId,
     pub segment: u16,
+}
+
+/// This struct represents how to delete objects from a device at once.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteObjectSetFromDeviceRequest {
+    /// A bucket may own the objects.
+    pub bucket_id: BucketId,
+
+    /// A device may own the objects.
+    pub device_id: DeviceId,
+
+    /// The objects will be deleted.
+    pub object_ids: BTreeSet<ObjectId>,
 }
 
 /// プロセス停止RPC。
