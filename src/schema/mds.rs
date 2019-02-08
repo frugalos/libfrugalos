@@ -203,6 +203,22 @@ impl Call for DeleteObjectsByPrefixRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
+/// オブジェクト存在確認RPC。
+#[derive(Debug)]
+pub struct MdsHeadObjectRpc;
+impl Call for MdsHeadObjectRpc {
+    const ID: ProcedureId = ProcedureId(0x0008_000a);
+    const NAME: &'static str = "frugalos.mds.object.mds_head";
+
+    type Req = ObjectRequest;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+
+    type Res = Result<Option<ObjectVersion>>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+}
+
 /// オブジェクト単位の要求。
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
