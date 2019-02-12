@@ -92,7 +92,7 @@ impl Client {
         };
         Call::<mds::HeadObjectRpc, _>::new(self, request)
     }
-    
+
     /// `PutObjectRpc`を実行する。
     pub fn put_object(
         &self,
