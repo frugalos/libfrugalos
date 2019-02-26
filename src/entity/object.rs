@@ -56,7 +56,7 @@ mod prefix_summary_total {
     use std::fmt::Display;
     use std::str::FromStr;
 
-    #[cfg_attr(feature = "cargo-clippy", allow(trivially_copy_pass_by_ref))]
+    #[allow(clippy::trivially_copy_pass_by_ref)]
     pub fn serialize<S>(x: &u64, s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
