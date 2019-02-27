@@ -2,7 +2,7 @@
 use std::time::Duration;
 
 /// 秒単位の時間尺を表すための構造体.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Seconds(pub u64);
 impl From<Duration> for Seconds {
     fn from(f: Duration) -> Self {
