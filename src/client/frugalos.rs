@@ -8,6 +8,7 @@ use std::ops::Range;
 use std::time::Duration;
 
 use super::Response;
+use consistency::ReadConsistency;
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
 use entity::object::{
@@ -39,12 +40,14 @@ impl Client {
         object_id: ObjectId,
         deadline: Duration,
         expect: Expect,
+        consistency: ReadConsistency,
     ) -> impl Future<Item = Option<(ObjectVersion, Vec<u8>)>, Error = Error> {
         let request = frugalos::ObjectRequest {
             bucket_id,
             object_id,
             deadline,
             expect,
+            consistency: Some(consistency),
         };
         Response(frugalos::GetObjectRpc::client(&self.rpc_service).call(self.server, request))
     }
@@ -78,12 +81,14 @@ impl Client {
         object_id: ObjectId,
         deadline: Duration,
         expect: Expect,
+        consistency: ReadConsistency,
     ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
         let request = frugalos::ObjectRequest {
             bucket_id,
             object_id,
             deadline,
             expect,
+            consistency: Some(consistency),
         };
         Response(frugalos::HeadObjectRpc::client(&self.rpc_service).call(self.server, request))
     }
@@ -120,6 +125,7 @@ impl Client {
             object_id,
             deadline,
             expect,
+            consistency: None,
         };
         Response(frugalos::DeleteObjectRpc::client(&self.rpc_service).call(self.server, request))
     }
