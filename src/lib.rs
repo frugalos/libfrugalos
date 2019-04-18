@@ -17,6 +17,7 @@ extern crate trackable;
 pub use error::{Error, ErrorKind};
 
 pub mod client;
+pub mod consistency;
 pub mod deadline;
 pub mod entity;
 pub mod expect;

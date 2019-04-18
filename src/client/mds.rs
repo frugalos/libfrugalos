@@ -6,6 +6,7 @@ use std::ops::Range;
 use std::time::Duration;
 
 use super::Response;
+use consistency::ReadConsistency;
 use entity::node::{LocalNodeId, RemoteNodeId};
 use entity::object::{
     DeleteObjectsByPrefixSummary, Metadata, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
@@ -56,11 +57,13 @@ impl Client {
         &self,
         id: ObjectId,
         expect: Expect,
+        consistency: ReadConsistency,
     ) -> impl Future<Item = (Option<RemoteNodeId>, Option<Metadata>), Error = Error> {
         let request = mds::ObjectRequest {
             node_id: self.node.1.clone(),
             object_id: id,
             expect,
+            consistency: Some(consistency),
         };
         Call::<mds::GetObjectRpc, _>::new(self, request)
     }
@@ -70,11 +73,13 @@ impl Client {
         &self,
         id: ObjectId,
         expect: Expect,
+        consistency: ReadConsistency,
     ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectVersion>), Error = Error> {
         let request = mds::ObjectRequest {
             node_id: self.node.1.clone(),
             object_id: id,
             expect,
+            consistency: Some(consistency),
         };
         Call::<mds::HeadObjectRpc, _>::new(self, request)
     }
@@ -108,6 +113,7 @@ impl Client {
             node_id: self.node.1.clone(),
             object_id: id,
             expect,
+            consistency: None,
         };
         Call::<mds::DeleteObjectRpc, _>::new(self, request)
     }
