@@ -209,4 +209,15 @@ impl Client {
     pub fn take_snapshot(&self) -> impl Future<Item = (), Error = Error> {
         Response(frugalos::TakeSnapshotRpc::client(&self.rpc_service).call(self.server, ()))
     }
+
+    /// Executes `SetRepairIdlenessThresholdRpc`
+    pub fn set_repair_idleness_threshold(
+        &self,
+        repair_idleness_threshold: i64,
+    ) -> impl Future<Item = (), Error = Error> {
+        Response(
+            frugalos::SetRepairIdlenessThresholdRpc::client(&self.rpc_service)
+                .call(self.server, repair_idleness_threshold),
+        )
+    }
 }
