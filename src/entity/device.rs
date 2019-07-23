@@ -319,9 +319,14 @@ pub enum SegmentAllocationPolicy {
     /// 同じセグメント内のノード群は同一のデバイスを割り当てる。
     #[serde(rename = "GATHER")]
     Gather = 3,
+
+    /// 同じセグメント内のノード群について、各デバイスに含まれるノードの個数がなるべく均等になるように割り当てる。
+    /// ノードの個数 <= デバイスの個数であれば Scatter と同じ。
+    #[serde(rename = "AS_EVEN_AS_POSSIBLE")]
+    AsEvenAsPossible = 4,
 }
 impl Default for SegmentAllocationPolicy {
     fn default() -> Self {
-        SegmentAllocationPolicy::ScatterIfPossible
+        SegmentAllocationPolicy::AsEvenAsPossible
     }
 }
