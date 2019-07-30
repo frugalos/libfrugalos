@@ -220,4 +220,15 @@ impl Client {
                 .call(self.server, repair_idleness_threshold),
         )
     }
+
+    /// Executes `SetRepairConcurrencyLimitRpc`.
+    pub fn set_repair_concurrency_limit(
+        &self,
+        repair_concurrency_limit: i64,
+    ) -> impl Future<Item = (), Error = Error> {
+        Response(
+            frugalos::SetRepairConcurrencyLimitRpc::client(&self.rpc_service)
+                .call(self.server, repair_concurrency_limit),
+        )
+    }
 }
