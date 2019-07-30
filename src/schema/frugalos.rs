@@ -291,3 +291,39 @@ impl Call for TakeSnapshotRpc {
     type ResDecoder = BincodeDecoder<Self::Res>;
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
+
+/// A value that eventually goes into Synchronizer::repair_idleness_threshold.
+#[derive(Debug, Serialize, Deserialize)]
+pub enum RepairIdleness {
+    /// Repair should wait for the given duration of idleness.
+    Threshold(Duration),
+    /// Repair is disabled.
+    Disabled,
+}
+
+/// Settings of frugalos_segment.
+/// If a field is None, that field will remain unchanged.
+/// If a field is Some(val), that field will change to val.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SegmentSettings {
+    /// SegmentService::repair_concurrency_limit
+    pub repair_concurrency_limit: Option<u64>,
+    /// Synchronizer::repair_idleness_threshold
+    pub repair_idleness_threshold: Option<RepairIdleness>,
+}
+
+/// An RPC for changing repair_idleness_threshold.
+#[derive(Debug)]
+pub struct SetSegmentSettingsRpc;
+impl Call for SetSegmentSettingsRpc {
+    const ID: ProcedureId = ProcedureId(0x000a_0002);
+    const NAME: &'static str = "frugalos.ctrl.set_segment_settings";
+
+    type Req = SegmentSettings;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+}
