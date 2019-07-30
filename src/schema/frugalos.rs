@@ -291,3 +291,19 @@ impl Call for TakeSnapshotRpc {
     type ResDecoder = BincodeDecoder<Self::Res>;
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
+
+/// An RPC for changing repair_concurrency_limit.
+#[derive(Debug)]
+pub struct SetRepairConcurrencyLimitRpc;
+impl Call for SetRepairConcurrencyLimitRpc {
+    const ID: ProcedureId = ProcedureId(0x000a_0003);
+    const NAME: &'static str = "frugalos.ctrl.set_repair_concurrency_limit";
+
+    type Req = i64;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+}
