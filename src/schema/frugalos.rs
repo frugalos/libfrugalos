@@ -310,6 +310,8 @@ pub struct RepairSettings {
     pub repair_concurrency_limit: Option<u64>,
     /// Synchronizer::repair_idleness_threshold
     pub repair_idleness_threshold: Option<RepairIdleness>,
+    /// SegmentService::full_sync_concurrency_limit
+    pub full_sync_concurrency_limit: Option<u64>,
 }
 
 /// An RPC for changing settings fo repair functionality.
