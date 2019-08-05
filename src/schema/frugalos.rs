@@ -319,7 +319,7 @@ pub struct RepairSettings {
 pub struct SetRepairSettingsRpc;
 impl Call for SetRepairSettingsRpc {
     const ID: ProcedureId = ProcedureId(0x000a_0002);
-    const NAME: &'static str = "frugalos.ctrl.set_segment_settings";
+    const NAME: &'static str = "frugalos.ctrl.set_repair_settings";
 
     type Req = RepairSettings;
     type ReqEncoder = BincodeEncoder<Self::Req>;
