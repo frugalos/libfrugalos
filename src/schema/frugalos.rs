@@ -301,25 +301,25 @@ pub enum RepairIdleness {
     Disabled,
 }
 
-/// Settings of frugalos_segment.
+/// Settings of frugalos_segment's repair functionality.
 /// If a field is None, that field will remain unchanged.
 /// If a field is Some(val), that field will change to val.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SegmentSettings {
+pub struct RepairSettings {
     /// SegmentService::repair_concurrency_limit
     pub repair_concurrency_limit: Option<u64>,
     /// Synchronizer::repair_idleness_threshold
     pub repair_idleness_threshold: Option<RepairIdleness>,
 }
 
-/// An RPC for changing repair_idleness_threshold.
+/// An RPC for changing settings fo repair functionality.
 #[derive(Debug)]
-pub struct SetSegmentSettingsRpc;
-impl Call for SetSegmentSettingsRpc {
+pub struct SetRepairSettingsRpc;
+impl Call for SetRepairSettingsRpc {
     const ID: ProcedureId = ProcedureId(0x000a_0002);
     const NAME: &'static str = "frugalos.ctrl.set_segment_settings";
 
-    type Req = SegmentSettings;
+    type Req = RepairSettings;
     type ReqEncoder = BincodeEncoder<Self::Req>;
     type ReqDecoder = BincodeDecoder<Self::Req>;
 

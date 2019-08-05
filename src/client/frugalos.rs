@@ -15,7 +15,7 @@ use entity::object::{
 };
 use expect::Expect;
 use schema::frugalos;
-use schema::frugalos::SegmentSettings;
+use schema::frugalos::RepairSettings;
 use Error;
 
 /// RPCクライアント。
@@ -211,14 +211,14 @@ impl Client {
         Response(frugalos::TakeSnapshotRpc::client(&self.rpc_service).call(self.server, ()))
     }
 
-    /// Executes `SetSegmentSettingsRpc`
-    pub fn set_segment_settings(
+    /// Executes `SetRepairSettingsRpc`
+    pub fn set_repair_settings(
         &self,
-        segment_settings: SegmentSettings,
+        repair_settings: RepairSettings,
     ) -> impl Future<Item = (), Error = Error> {
         Response(
-            frugalos::SetSegmentSettingsRpc::client(&self.rpc_service)
-                .call(self.server, segment_settings),
+            frugalos::SetRepairSettingsRpc::client(&self.rpc_service)
+                .call(self.server, repair_settings),
         )
     }
 }
