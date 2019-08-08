@@ -14,7 +14,7 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
-use repair::RepairSettings;
+use repair::RepairConfig;
 use schema::frugalos;
 use Error;
 
@@ -211,14 +211,14 @@ impl Client {
         Response(frugalos::TakeSnapshotRpc::client(&self.rpc_service).call(self.server, ()))
     }
 
-    /// Executes `SetRepairSettingsRpc`
-    pub fn set_repair_settings(
+    /// Executes `SetRepairConfigRpc`
+    pub fn set_repair_config(
         &self,
-        repair_settings: RepairSettings,
+        repair_config: RepairConfig,
     ) -> impl Future<Item = (), Error = Error> {
         Response(
-            frugalos::SetRepairSettingsRpc::client(&self.rpc_service)
-                .call(self.server, repair_settings),
+            frugalos::SetRepairConfigRpc::client(&self.rpc_service)
+                .call(self.server, repair_config),
         )
     }
 }

@@ -18,11 +18,11 @@ pub struct RepairConcurrencyLimit(pub u64);
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct FullSyncConcurrencyLimit(pub u64);
 
-/// Settings of frugalos_segment's repair functionality.
+/// Configuration of frugalos_segment's repair functionality.
 /// If a field is None, that field will remain unchanged.
 /// If a field is Some(val), that field will change to val.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RepairSettings {
+pub struct RepairConfig {
     /// SegmentService::repair_concurrency_limit
     pub repair_concurrency_limit: Option<RepairConcurrencyLimit>,
     /// Synchronizer::repair_idleness_threshold
