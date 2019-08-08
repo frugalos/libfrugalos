@@ -14,9 +14,9 @@ pub enum RepairIdleness {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct RepairConcurrencyLimit(pub u64);
 
-/// The maximum number of threads to execute full_sync.
+/// The maximum number of threads to execute segment_gc.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct FullSyncConcurrencyLimit(pub u64);
+pub struct SegmentGcConcurrencyLimit(pub u64);
 
 /// Configuration of frugalos_segment's repair functionality.
 /// If a field is None, that field will remain unchanged.
@@ -27,6 +27,6 @@ pub struct RepairConfig {
     pub repair_concurrency_limit: Option<RepairConcurrencyLimit>,
     /// Synchronizer::repair_idleness_threshold
     pub repair_idleness_threshold: Option<RepairIdleness>,
-    /// SegmentService::full_sync_concurrency_limit
-    pub full_sync_concurrency_limit: Option<FullSyncConcurrencyLimit>,
+    /// SegmentService::segment_gc_concurrency_limit
+    pub segment_gc_concurrency_limit: Option<SegmentGcConcurrencyLimit>,
 }
