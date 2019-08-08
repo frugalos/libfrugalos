@@ -14,8 +14,8 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
+use repair::RepairSettings;
 use schema::frugalos;
-use schema::frugalos::RepairSettings;
 use Error;
 
 /// RPCクライアント。

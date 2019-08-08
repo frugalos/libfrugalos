@@ -11,6 +11,7 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
+use repair::RepairSettings;
 use Result;
 
 /// オブジェクト取得RPC。
@@ -290,28 +291,6 @@ impl Call for TakeSnapshotRpc {
     type Res = Result<()>;
     type ResDecoder = BincodeDecoder<Self::Res>;
     type ResEncoder = BincodeEncoder<Self::Res>;
-}
-
-/// A value that eventually goes into Synchronizer::repair_idleness_threshold.
-#[derive(Debug, Serialize, Deserialize)]
-pub enum RepairIdleness {
-    /// Repair should wait for the given duration of idleness.
-    Threshold(Duration),
-    /// Repair is disabled.
-    Disabled,
-}
-
-/// Settings of frugalos_segment's repair functionality.
-/// If a field is None, that field will remain unchanged.
-/// If a field is Some(val), that field will change to val.
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RepairSettings {
-    /// SegmentService::repair_concurrency_limit
-    pub repair_concurrency_limit: Option<u64>,
-    /// Synchronizer::repair_idleness_threshold
-    pub repair_idleness_threshold: Option<RepairIdleness>,
-    /// SegmentService::full_sync_concurrency_limit
-    pub full_sync_concurrency_limit: Option<u64>,
 }
 
 /// An RPC for changing settings fo repair functionality.
