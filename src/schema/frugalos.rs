@@ -11,6 +11,7 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
+use repair::RepairConfig;
 use Result;
 
 /// オブジェクト取得RPC。
@@ -290,4 +291,20 @@ impl Call for TakeSnapshotRpc {
     type Res = Result<()>;
     type ResDecoder = BincodeDecoder<Self::Res>;
     type ResEncoder = BincodeEncoder<Self::Res>;
+}
+
+/// An RPC for changing configuration of repair functionality.
+#[derive(Debug)]
+pub struct SetRepairConfigRpc;
+impl Call for SetRepairConfigRpc {
+    const ID: ProcedureId = ProcedureId(0x000a_0002);
+    const NAME: &'static str = "frugalos.ctrl.set_repair_config";
+
+    type Req = RepairConfig;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
 }
