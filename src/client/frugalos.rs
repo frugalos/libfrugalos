@@ -14,6 +14,7 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
+use multiplicity::MultiplicityConfig;
 use repair::RepairConfig;
 use schema::frugalos;
 use Error;
@@ -97,6 +98,7 @@ impl Client {
         content: Vec<u8>,
         deadline: Duration,
         expect: Expect,
+        multiplicity_config: MultiplicityConfig,
     ) -> impl Future<Item = (ObjectVersion, bool), Error = Error> {
         let request = frugalos::PutObjectRequest {
             bucket_id,
@@ -104,6 +106,7 @@ impl Client {
             content,
             deadline,
             expect,
+            multiplicity_config,
         };
         Response(frugalos::PutObjectRpc::client(&self.rpc_service).call(self.server, request))
     }
