@@ -4,6 +4,7 @@ use fibers_rpc::{Call, Cast, ProcedureId};
 use std::ops::Range;
 use std::time::Duration;
 
+use consistency::ReadConsistency;
 use entity::node::{LocalNodeId, RemoteNodeId};
 use entity::object::{
     DeleteObjectsByPrefixSummary, Metadata, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
@@ -210,6 +211,7 @@ pub struct ObjectRequest {
     pub node_id: LocalNodeId,
     pub object_id: ObjectId,
     pub expect: Expect,
+    pub consistency: Option<ReadConsistency>,
 }
 
 /// バージョン単位の要求。

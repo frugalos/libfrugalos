@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 use std::ops::Range;
 use std::time::Duration;
 
+use consistency::ReadConsistency;
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
 use entity::object::{
@@ -198,6 +199,7 @@ pub struct ObjectRequest {
     pub object_id: ObjectId,
     pub deadline: Duration,
     pub expect: Expect,
+    pub consistency: Option<ReadConsistency>,
 }
 
 /// バージョン単位のRPC要求。
