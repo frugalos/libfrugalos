@@ -94,6 +94,23 @@ impl Client {
         Response(frugalos::HeadObjectRpc::client(&self.rpc_service).call(self.server, request))
     }
 
+    /// `HeadObjectRpc`を実行する。
+    pub fn mds_head_object(
+        &self,
+        bucket_id: BucketId,
+        object_id: ObjectId,
+        deadline: Duration,
+        expect: Expect,
+    ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
+        let request = frugalos::ObjectRequest {
+            bucket_id,
+            object_id,
+            deadline,
+            expect,
+        };
+        Response(frugalos::MdsHeadObjectRpc::client(&self.rpc_service).call(self.server, request))
+    }
+
     /// `PutObjectRpc`を実行する。
     pub fn put_object(
         &self,

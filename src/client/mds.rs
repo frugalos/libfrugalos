@@ -68,6 +68,20 @@ impl Client {
         Call::<mds::GetObjectRpc, _>::new(self, request)
     }
 
+    /// `MdsHeadObjectRpc`を実行する。
+    pub fn mds_head_object(
+        &self,
+        id: ObjectId,
+        expect: Expect,
+    ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectVersion>), Error = Error> {
+        let request = mds::ObjectRequest {
+            node_id: self.node.1.clone(),
+            object_id: id,
+            expect,
+        };
+        Call::<mds::MdsHeadObjectRpc, _>::new(self, request)
+    }
+
     /// `HeadObjectRpc`を実行する。
     pub fn head_object(
         &self,
