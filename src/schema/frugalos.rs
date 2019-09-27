@@ -39,7 +39,7 @@ impl Call for HeadObjectRpc {
     const ID: ProcedureId = ProcedureId(0x0009_0001);
     const NAME: &'static str = "frugalos.object.head";
 
-    type Req = ObjectRequest;
+    type Req = HeadObjectRequest;
     type ReqDecoder = BincodeDecoder<Self::Req>;
     type ReqEncoder = BincodeEncoder<Self::Req>;
 
@@ -200,6 +200,19 @@ pub struct ObjectRequest {
     pub deadline: Duration,
     pub expect: Expect,
     pub consistency: Option<ReadConsistency>,
+}
+
+/// オブジェクト単位の存在確認 RPC 要求。
+#[allow(missing_docs)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HeadObjectRequest {
+    pub bucket_id: BucketId,
+    pub object_id: ObjectId,
+    pub deadline: Duration,
+    pub expect: Expect,
+    pub consistency: Option<ReadConsistency>,
+    /// ストレージ側にも問い合わせるかどうか
+    pub storage: bool,
 }
 
 /// バージョン単位のRPC要求。
