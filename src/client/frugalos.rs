@@ -90,7 +90,7 @@ impl Client {
             object_id,
             deadline,
             expect,
-            consistency: Some(consistency),
+            consistency,
             check_storage,
         };
         Response(frugalos::HeadObjectRpc::client(&self.rpc_service).call(self.server, request))

@@ -210,7 +210,7 @@ pub struct HeadObjectRequest {
     pub object_id: ObjectId,
     pub deadline: Duration,
     pub expect: Expect,
-    pub consistency: Option<ReadConsistency>,
+    pub consistency: ReadConsistency,
     /// ストレージ側にも問い合わせるかどうか
     pub check_storage: bool,
 }
