@@ -83,7 +83,7 @@ impl Client {
         deadline: Duration,
         expect: Expect,
         consistency: ReadConsistency,
-        storage: bool,
+        check_storage: bool,
     ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
         let request = frugalos::HeadObjectRequest {
             bucket_id,
@@ -91,7 +91,7 @@ impl Client {
             deadline,
             expect,
             consistency: Some(consistency),
-            storage,
+            check_storage,
         };
         Response(frugalos::HeadObjectRpc::client(&self.rpc_service).call(self.server, request))
     }

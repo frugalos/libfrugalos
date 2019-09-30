@@ -212,7 +212,7 @@ pub struct HeadObjectRequest {
     pub expect: Expect,
     pub consistency: Option<ReadConsistency>,
     /// ストレージ側にも問い合わせるかどうか
-    pub storage: bool,
+    pub check_storage: bool,
 }
 
 /// バージョン単位のRPC要求。
