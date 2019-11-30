@@ -40,6 +40,18 @@ impl Client {
         Call::<mds::ListObjectsRpc, _>::new(self, self.node.1.clone())
     }
 
+    /// `ListObjectsByPrefixRpc`を実行する。
+    pub fn list_objects_by_prefix(
+        &self,
+        prefix: ObjectPrefix,
+    ) -> impl Future<Item = (Option<RemoteNodeId>, Vec<ObjectSummary>), Error = Error> {
+        let request = mds::PrefixRequest {
+            node_id: self.node.1.clone(),
+            prefix,
+        };
+        Call::<mds::ListObjectsByPrefixRpc, _>::new(self, request)
+    }
+
     /// `GetLatestVersionRpc`を実行する。
     pub fn latest_version(
         &self,

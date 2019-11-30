@@ -204,6 +204,26 @@ impl Call for DeleteObjectsByPrefixRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
 
+/// 接頭辞指定でのオブジェクト一覧取得RPC。
+#[derive(Debug)]
+pub struct ListObjectsByPrefixRpc;
+impl Call for ListObjectsByPrefixRpc {
+    const ID: ProcedureId = ProcedureId(0x0008_000a);
+    const NAME: &'static str = "frugalos.mds.object.list_by_prefix";
+
+    type Req = PrefixRequest;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+
+    type Res = Result<Vec<ObjectSummary>>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+
+    fn enable_async_response(_: &Self::Res) -> bool {
+        true
+    }
+}
+
 /// オブジェクト単位の要求。
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
