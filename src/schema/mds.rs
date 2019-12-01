@@ -47,7 +47,7 @@ impl Call for ListObjectsRpc {
     const ID: ProcedureId = ProcedureId(0x0008_0000);
     const NAME: &'static str = "frugalos.mds.object.list";
 
-    type Req = LocalNodeId;
+    type Req = ListObjectsRequest;
     type ReqDecoder = BincodeDecoder<Self::Req>;
     type ReqEncoder = BincodeEncoder<Self::Req>;
 
@@ -179,7 +179,7 @@ impl Call for GetObjectCountRpc {
     const ID: ProcedureId = ProcedureId(0x0008_0008);
     const NAME: &'static str = "frugalos.mds.object.count";
 
-    type Req = LocalNodeId;
+    type Req = ObjectCountRequest;
     type ReqDecoder = BincodeDecoder<Self::Req>;
     type ReqEncoder = BincodeEncoder<Self::Req>;
 
@@ -212,6 +212,22 @@ pub struct ObjectRequest {
     pub object_id: ObjectId,
     pub expect: Expect,
     pub consistency: Option<ReadConsistency>,
+}
+
+/// オブジェクト一覧の要求。
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ListObjectsRequest {
+    pub node_id: LocalNodeId,
+    pub consistency: ReadConsistency,
+}
+
+/// オブジェクトカウントの要求。
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ObjectCountRequest {
+    pub node_id: LocalNodeId,
+    pub consistency: ReadConsistency,
 }
 
 /// バージョン単位の要求。

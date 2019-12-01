@@ -58,8 +58,13 @@ impl Client {
         &self,
         bucket_id: BucketId,
         segment: u16,
+        consistency: ReadConsistency,
     ) -> impl Future<Item = Vec<ObjectSummary>, Error = Error> {
-        let request = frugalos::SegmentRequest { bucket_id, segment };
+        let request = frugalos::ListObjectsRequest {
+            bucket_id,
+            segment,
+            consistency,
+        };
         Response(frugalos::ListObjectsRpc::client(&self.rpc_service).call(self.server, request))
     }
 

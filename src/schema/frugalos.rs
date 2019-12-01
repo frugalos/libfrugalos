@@ -88,7 +88,7 @@ impl Call for ListObjectsRpc {
     const ID: ProcedureId = ProcedureId(0x0009_0004);
     const NAME: &'static str = "frugalos.object.list";
 
-    type Req = SegmentRequest;
+    type Req = ListObjectsRequest;
     type ReqDecoder = BincodeDecoder<Self::Req>;
     type ReqEncoder = BincodeEncoder<Self::Req>;
 
@@ -253,6 +253,15 @@ pub struct PutObjectRequest {
     pub content: Vec<u8>,
     pub deadline: Duration,
     pub expect: Expect,
+}
+
+/// オブジェクト一覧要求。
+#[allow(missing_docs)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ListObjectsRequest {
+    pub bucket_id: BucketId,
+    pub segment: u16,
+    pub consistency: ReadConsistency,
 }
 
 /// セグメント単位でのRPC要求。
