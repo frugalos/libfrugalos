@@ -9,7 +9,8 @@ use consistency::ReadConsistency;
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
 use entity::object::{
-    DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
+    CountFragments, DeleteObjectsByPrefixSummary, HeadObjectSummary, ObjectId, ObjectPrefix,
+    ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
 use multiplicity::MultiplicityConfig;
@@ -44,7 +45,7 @@ impl Call for HeadObjectRpc {
     type ReqDecoder = BincodeDecoder<Self::Req>;
     type ReqEncoder = BincodeEncoder<Self::Req>;
 
-    type Res = Result<Option<ObjectVersion>>;
+    type Res = Result<Option<HeadObjectSummary>>;
     type ResDecoder = BincodeDecoder<Self::Res>;
     type ResEncoder = BincodeEncoder<Self::Res>;
 }
@@ -234,6 +235,8 @@ pub struct HeadObjectRequest {
     pub consistency: ReadConsistency,
     /// ストレージ側にも問い合わせるかどうか
     pub check_storage: bool,
+    /// true ならストレージに保存されているフラグメント数も数える
+    pub count_fragments: CountFragments,
 }
 
 /// バージョン単位のRPC要求。

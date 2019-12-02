@@ -12,7 +12,8 @@ use consistency::ReadConsistency;
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
 use entity::object::{
-    DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
+    CountFragments, DeleteObjectsByPrefixSummary, HeadObjectSummary, ObjectId, ObjectPrefix,
+    ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
 use multiplicity::MultiplicityConfig;
@@ -102,7 +103,8 @@ impl Client {
         expect: Expect,
         consistency: ReadConsistency,
         check_storage: bool,
-    ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
+        count_fragments: CountFragments,
+    ) -> impl Future<Item = Option<HeadObjectSummary>, Error = Error> {
         let request = frugalos::HeadObjectRequest {
             bucket_id,
             object_id,
@@ -110,6 +112,7 @@ impl Client {
             expect,
             consistency,
             check_storage,
+            count_fragments,
         };
         Response(frugalos::HeadObjectRpc::client(&self.rpc_service).call(self.server, request))
     }
