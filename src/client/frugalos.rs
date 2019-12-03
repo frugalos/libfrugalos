@@ -63,6 +63,23 @@ impl Client {
         Response(frugalos::ListObjectsRpc::client(&self.rpc_service).call(self.server, request))
     }
 
+    /// `ListObjectsByPrefixRpc`を実行する。
+    pub fn list_objects_by_prefix(
+        &self,
+        bucket_id: BucketId,
+        prefix: ObjectPrefix,
+        deadline: Duration,
+    ) -> impl Future<Item = Vec<ObjectSummary>, Error = Error> {
+        let request = frugalos::PrefixRequest {
+            bucket_id,
+            prefix,
+            deadline,
+        };
+        Response(
+            frugalos::ListObjectsByPrefixRpc::client(&self.rpc_service).call(self.server, request),
+        )
+    }
+
     /// `GetLatestVersionRpc`を実行する。
     pub fn latest_version(
         &self,
