@@ -21,6 +21,7 @@ pub mod consistency;
 pub mod deadline;
 pub mod entity;
 pub mod expect;
+pub mod multiplicity;
 pub mod repair;
 pub mod schema;
 pub mod time;

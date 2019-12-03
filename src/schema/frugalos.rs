@@ -12,6 +12,7 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
+use multiplicity::MultiplicityConfig;
 use repair::RepairConfig;
 use Result;
 
@@ -273,6 +274,7 @@ pub struct PutObjectRequest {
     pub content: Vec<u8>,
     pub deadline: Duration,
     pub expect: Expect,
+    pub multiplicity_config: MultiplicityConfig,
 }
 
 /// セグメント単位でのRPC要求。
