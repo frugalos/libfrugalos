@@ -36,8 +36,13 @@ impl Client {
     /// `ListObjectsRpc`を実行する。
     pub fn list_objects(
         &self,
+        consistency: ReadConsistency,
     ) -> impl Future<Item = (Option<RemoteNodeId>, Vec<ObjectSummary>), Error = Error> {
-        Call::<mds::ListObjectsRpc, _>::new(self, self.node.1.clone())
+        let request = mds::ListObjectsRequest {
+            node_id: self.node.1.clone(),
+            consistency,
+        };
+        Call::<mds::ListObjectsRpc, _>::new(self, request)
     }
 
     /// `ListObjectsByPrefixRpc`を実行する。
@@ -60,8 +65,15 @@ impl Client {
     }
 
     /// セグメントが保持しているオブジェクトの数を返す.
-    pub fn object_count(&self) -> impl Future<Item = (Option<RemoteNodeId>, u64), Error = Error> {
-        Call::<mds::GetObjectCountRpc, _>::new(self, self.node.1.clone())
+    pub fn object_count(
+        &self,
+        consistency: ReadConsistency,
+    ) -> impl Future<Item = (Option<RemoteNodeId>, u64), Error = Error> {
+        let request = mds::ObjectCountRequest {
+            node_id: self.node.1.clone(),
+            consistency,
+        };
+        Call::<mds::GetObjectCountRpc, _>::new(self, request)
     }
 
     /// `GetObjectRpc`を実行する。
@@ -176,7 +188,17 @@ impl SetNodeId for LocalNodeId {
         *self = node_id;
     }
 }
+impl SetNodeId for mds::ListObjectsRequest {
+    fn set_node_id(&mut self, node_id: LocalNodeId) {
+        self.node_id = node_id;
+    }
+}
 impl SetNodeId for mds::ObjectRequest {
+    fn set_node_id(&mut self, node_id: LocalNodeId) {
+        self.node_id = node_id;
+    }
+}
+impl SetNodeId for mds::ObjectCountRequest {
     fn set_node_id(&mut self, node_id: LocalNodeId) {
         self.node_id = node_id;
     }
