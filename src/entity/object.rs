@@ -51,15 +51,6 @@ pub struct DeleteObjectsByPrefixSummary {
     pub total: u64,
 }
 
-/// オブジェクト存在確認結果要約
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct HeadObjectSummary {
-    /// バージョン番号.
-    pub version: ObjectVersion,
-    /// フラグメント要約.
-    pub fragments: Option<FragmentsSummary>,
-}
-
 /// フラグメント要約.
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FragmentsSummary {
@@ -69,16 +60,6 @@ pub struct FragmentsSummary {
     pub found_total: u8,
     /// デバイス上に存在すべきフラグメント群の内、見つからなかったフラグメント数.
     pub lost_total: u8,
-}
-
-/// フラグメントの個数を数えるかどうかのフラグ。
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CountFragments(pub bool);
-
-impl Default for CountFragments {
-    fn default() -> Self {
-        CountFragments(false)
-    }
 }
 
 mod prefix_summary_total {
