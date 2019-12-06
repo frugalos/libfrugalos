@@ -51,6 +51,17 @@ pub struct DeleteObjectsByPrefixSummary {
     pub total: u64,
 }
 
+/// フラグメント要約.
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct FragmentsSummary {
+    /// 破損しているかどうか.
+    pub is_corrupted: bool,
+    /// デバイス上に存在すべきフラグメント群の内、存在したフラグメント数.
+    pub found_total: u8,
+    /// デバイス上に存在すべきフラグメント群の内、見つからなかったフラグメント数.
+    pub lost_total: u8,
+}
+
 mod prefix_summary_total {
     use serde::{de, Deserialize, Deserializer, Serializer};
     use std::fmt::Display;

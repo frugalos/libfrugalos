@@ -12,7 +12,8 @@ use consistency::ReadConsistency;
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
 use entity::object::{
-    DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
+    DeleteObjectsByPrefixSummary, FragmentsSummary, ObjectId, ObjectPrefix, ObjectSummary,
+    ObjectVersion,
 };
 use expect::Expect;
 use multiplicity::MultiplicityConfig;
@@ -91,6 +92,25 @@ impl Client {
         Response(
             frugalos::GetLatestVersionRpc::client(&self.rpc_service).call(self.server, request),
         )
+    }
+
+    /// `CountFragmentsRpc`を実行する。
+    pub fn count_fragments(
+        &self,
+        bucket_id: BucketId,
+        object_id: ObjectId,
+        deadline: Duration,
+        expect: Expect,
+        consistency: ReadConsistency,
+    ) -> impl Future<Item = Option<FragmentsSummary>, Error = Error> {
+        let request = frugalos::CountFragmentsRequest {
+            bucket_id,
+            object_id,
+            deadline,
+            expect,
+            consistency,
+        };
+        Response(frugalos::CountFragmentsRpc::client(&self.rpc_service).call(self.server, request))
     }
 
     /// `HeadObjectRpc`を実行する。

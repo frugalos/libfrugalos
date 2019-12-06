@@ -9,7 +9,8 @@ use consistency::ReadConsistency;
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
 use entity::object::{
-    DeleteObjectsByPrefixSummary, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
+    DeleteObjectsByPrefixSummary, FragmentsSummary, ObjectId, ObjectPrefix, ObjectSummary,
+    ObjectVersion,
 };
 use expect::Expect;
 use multiplicity::MultiplicityConfig;
@@ -212,6 +213,22 @@ impl Call for ListObjectsByPrefixRpc {
     }
 }
 
+/// フラグメントカウントRPC。
+#[derive(Debug)]
+pub struct CountFragmentsRpc;
+impl Call for CountFragmentsRpc {
+    const ID: ProcedureId = ProcedureId(0x0009_000d);
+    const NAME: &'static str = "frugalos.object.count_fragments";
+
+    type Req = CountFragmentsRequest;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+
+    type Res = Result<Option<FragmentsSummary>>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+}
+
 /// オブジェクト単位のRPC要求。
 #[allow(missing_docs)]
 #[derive(Debug, Serialize, Deserialize)]
@@ -221,6 +238,17 @@ pub struct ObjectRequest {
     pub deadline: Duration,
     pub expect: Expect,
     pub consistency: Option<ReadConsistency>,
+}
+
+/// フラグメントカウント RPC 要求。
+#[allow(missing_docs)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CountFragmentsRequest {
+    pub bucket_id: BucketId,
+    pub object_id: ObjectId,
+    pub deadline: Duration,
+    pub expect: Expect,
+    pub consistency: ReadConsistency,
 }
 
 /// オブジェクト単位の存在確認 RPC 要求。
