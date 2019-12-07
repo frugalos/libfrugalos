@@ -1,6 +1,6 @@
 [package]
 name = "libfrugalos"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["The FrugalOS Developers"]
 description = "This crate defines the public interface of `frugalos` for related tools"
 homepage = "https://github.com/frugalos/libfrugalos"
