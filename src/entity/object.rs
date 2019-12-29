@@ -25,7 +25,8 @@ impl FromStr for ObjectVersion {
 pub struct ObjectPrefix(pub String);
 
 /// メタデータオブジェクトの要約.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+// `Default` は `DeleteObjectsByRangeRpc::client` などが要求する.
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub struct ObjectSummary {
     pub id: String,

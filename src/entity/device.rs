@@ -15,7 +15,7 @@ pub type DeviceId = String;
 pub type DeviceNo = u32;
 
 /// デバイスの内容の要約。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct DeviceSummary {
     /// デバイスのID。
     pub id: DeviceId,
@@ -43,6 +43,11 @@ pub enum DeviceKind {
 
     /// ファイルデバイス。
     File,
+}
+impl Default for DeviceKind {
+    fn default() -> Self {
+        DeviceKind::Virtual
+    }
 }
 
 /// デバイス。

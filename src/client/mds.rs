@@ -29,8 +29,10 @@ impl Client {
 
     /// `RecommendToLeaderRpc`を実行する。
     pub fn recommend_to_leader(&self) {
-        let _ = mds::RecommendToLeaderRpc::client(&self.rpc_service)
-            .cast(self.node.0, self.node.1.clone());
+        let request = mds::RecommendToLeaderRequest {
+            node_id: self.node.1.clone(),
+        };
+        let _ = mds::RecommendToLeaderRpc::client(&self.rpc_service).cast(self.node.0, request);
     }
 
     /// `ListObjectsRpc`を実行する。
@@ -61,7 +63,10 @@ impl Client {
     pub fn latest_version(
         &self,
     ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectSummary>), Error = Error> {
-        Call::<mds::GetLatestVersionRpc, _>::new(self, self.node.1.clone())
+        let request = mds::GetLatestVersionRequest {
+            node_id: self.node.1.clone(),
+        };
+        Call::<mds::GetLatestVersionRpc, _>::new(self, request)
     }
 
     /// セグメントが保持しているオブジェクトの数を返す.
@@ -188,6 +193,16 @@ impl SetNodeId for LocalNodeId {
         *self = node_id;
     }
 }
+impl SetNodeId for mds::GetLeaderRequest {
+    fn set_node_id(&mut self, node_id: LocalNodeId) {
+        self.node_id = node_id;
+    }
+}
+impl SetNodeId for mds::GetLatestVersionRequest {
+    fn set_node_id(&mut self, node_id: LocalNodeId) {
+        self.node_id = node_id;
+    }
+}
 impl SetNodeId for mds::ListObjectsRequest {
     fn set_node_id(&mut self, node_id: LocalNodeId) {
         self.node_id = node_id;
@@ -277,8 +292,12 @@ where
                         );
 
                         self.retried_count += 1;
-                        let future = mds::GetLeaderRpc::client(&self.rpc_service)
-                            .call(self.node.0, self.node.1.clone());
+                        let future = mds::GetLeaderRpc::client(&self.rpc_service).call(
+                            self.node.0,
+                            mds::GetLeaderRequest {
+                                node_id: self.node.1.clone(),
+                            },
+                        );
                         self.leader = Some(Response(future));
                         self.response = None;
                     } else {

@@ -8,7 +8,7 @@ use entity::device::DeviceId;
 pub type BucketId = String;
 
 /// バケツの内容の要約。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct BucketSummary {
     /// バケツのID。
     pub id: BucketId,
@@ -33,6 +33,11 @@ pub enum BucketKind {
 
     /// ErasureCodingによる冗長化を行うバケツ。
     Dispersed,
+}
+impl Default for BucketKind {
+    fn default() -> Self {
+        BucketKind::Dispersed
+    }
 }
 
 /// バケツ。

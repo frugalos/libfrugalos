@@ -6,7 +6,7 @@ use std::net::{IpAddr, SocketAddr};
 pub type ServerId = String;
 
 /// サーバの要約情報。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct ServerSummary {
     /// ID。
     pub id: ServerId,

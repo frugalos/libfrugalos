@@ -1,5 +1,4 @@
 //! MDS系RPCのスキーマ定義。
-use bytecodec::bincode_codec::{BincodeDecoder, BincodeEncoder};
 use fibers_rpc::{Call, Cast, ProcedureId};
 use std::ops::Range;
 use std::time::Duration;
@@ -10,6 +9,23 @@ use entity::object::{
     DeleteObjectsByPrefixSummary, Metadata, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
 use expect::Expect;
+use protobuf::schema::mds::{
+    GetLatestVersionRequestDecoder, GetLatestVersionRequestEncoder, GetLeaderRequestDecoder,
+    GetLeaderRequestEncoder, GetLeaderResponseDecoder, GetLeaderResponseEncoder,
+    ListObjectsRequestDecoder, ListObjectsRequestEncoder, MaybeMetadataResponseDecoder,
+    MaybeMetadataResponseEncoder, ObjectCountRequestDecoder, ObjectCountRequestEncoder,
+    ObjectCountResponseDecoder, ObjectCountResponseEncoder, ObjectRequestDecoder,
+    ObjectRequestEncoder, PrefixRequestDecoder, PrefixRequestEncoder, PutObjectRequestDecoder,
+    PutObjectRequestEncoder, PutObjectResponseDecoder, PutObjectResponseEncoder,
+    RangeRequestDecoder, RangeRequestEncoder, RecommendToLeaderRequestDecoder,
+    RecommendToLeaderRequestEncoder, VersionRequestDecoder, VersionRequestEncoder,
+};
+use protobuf::schema::object::{
+    DeleteObjectsByPrefixSummaryResponseDecoder, DeleteObjectsByPrefixSummaryResponseEncoder,
+    MaybeObjectSummaryResponseDecoder, MaybeObjectSummaryResponseEncoder,
+    MaybeObjectVersionResponseDecoder, MaybeObjectVersionResponseEncoder,
+    ObjectSummarySequenceResponseDecoder, ObjectSummarySequenceResponseEncoder,
+};
 use Result;
 
 /// Raftのリーダ取得RPC。
@@ -19,13 +35,13 @@ impl Call for GetLeaderRpc {
     const ID: ProcedureId = ProcedureId(0x0007_0000);
     const NAME: &'static str = "frugalos.mds.leader.get";
 
-    type Req = LocalNodeId;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type Req = GetLeaderRequest;
+    type ReqDecoder = GetLeaderRequestDecoder;
+    type ReqEncoder = GetLeaderRequestEncoder;
 
     type Res = Result<RemoteNodeId>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = GetLeaderResponseDecoder;
+    type ResEncoder = GetLeaderResponseEncoder;
 }
 
 /// リーダ推薦（再選挙）RPC。
@@ -35,9 +51,9 @@ impl Cast for RecommendToLeaderRpc {
     const ID: ProcedureId = ProcedureId(0x0007_0001);
     const NAME: &'static str = "frugalos.mds.leader.recommend";
 
-    type Notification = LocalNodeId;
-    type Decoder = BincodeDecoder<Self::Notification>;
-    type Encoder = BincodeEncoder<Self::Notification>;
+    type Notification = RecommendToLeaderRequest;
+    type Decoder = RecommendToLeaderRequestDecoder;
+    type Encoder = RecommendToLeaderRequestEncoder;
 }
 
 /// オブジェクト一覧取得RPC。
@@ -48,12 +64,12 @@ impl Call for ListObjectsRpc {
     const NAME: &'static str = "frugalos.mds.object.list";
 
     type Req = ListObjectsRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = ListObjectsRequestDecoder;
+    type ReqEncoder = ListObjectsRequestEncoder;
 
     type Res = Result<Vec<ObjectSummary>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = ObjectSummarySequenceResponseDecoder;
+    type ResEncoder = ObjectSummarySequenceResponseEncoder;
 
     fn enable_async_response(_: &Self::Res) -> bool {
         true
@@ -68,12 +84,12 @@ impl Call for GetObjectRpc {
     const NAME: &'static str = "frugalos.mds.object.get";
 
     type Req = ObjectRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = ObjectRequestDecoder;
+    type ReqEncoder = ObjectRequestEncoder;
 
     type Res = Result<Option<Metadata>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = MaybeMetadataResponseDecoder;
+    type ResEncoder = MaybeMetadataResponseEncoder;
 }
 
 /// オブジェクト存在確認RPC。
@@ -84,12 +100,12 @@ impl Call for HeadObjectRpc {
     const NAME: &'static str = "frugalos.mds.object.head";
 
     type Req = ObjectRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = ObjectRequestDecoder;
+    type ReqEncoder = ObjectRequestEncoder;
 
     type Res = Result<Option<ObjectVersion>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = MaybeObjectVersionResponseDecoder;
+    type ResEncoder = MaybeObjectVersionResponseEncoder;
 }
 
 /// オブジェクト保存RPC。
@@ -100,12 +116,12 @@ impl Call for PutObjectRpc {
     const NAME: &'static str = "frugalos.mds.object.put";
 
     type Req = PutObjectRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = PutObjectRequestDecoder;
+    type ReqEncoder = PutObjectRequestEncoder;
 
     type Res = Result<(ObjectVersion, Option<ObjectVersion>)>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = PutObjectResponseDecoder;
+    type ResEncoder = PutObjectResponseEncoder;
 }
 
 /// オブジェクト削除RPC。
@@ -116,12 +132,12 @@ impl Call for DeleteObjectRpc {
     const NAME: &'static str = "frugalos.mds.object.delete";
 
     type Req = ObjectRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = ObjectRequestDecoder;
+    type ReqEncoder = ObjectRequestEncoder;
 
     type Res = Result<Option<ObjectVersion>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = MaybeObjectVersionResponseDecoder;
+    type ResEncoder = MaybeObjectVersionResponseEncoder;
 }
 
 /// 最新バージョン取得RPC。
@@ -131,13 +147,13 @@ impl Call for GetLatestVersionRpc {
     const ID: ProcedureId = ProcedureId(0x0008_0005);
     const NAME: &'static str = "frugalos.mds.object.latest_version";
 
-    type Req = LocalNodeId;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type Req = GetLatestVersionRequest;
+    type ReqDecoder = GetLatestVersionRequestDecoder;
+    type ReqEncoder = GetLatestVersionRequestEncoder;
 
     type Res = Result<Option<ObjectSummary>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = MaybeObjectSummaryResponseDecoder;
+    type ResEncoder = MaybeObjectSummaryResponseEncoder;
 }
 
 /// バージョン指定による削除RPC。
@@ -148,12 +164,12 @@ impl Call for DeleteObjectByVersionRpc {
     const NAME: &'static str = "frugalos.mds.object.delete_by_version";
 
     type Req = VersionRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = VersionRequestDecoder;
+    type ReqEncoder = VersionRequestEncoder;
 
     type Res = Result<Option<ObjectVersion>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = MaybeObjectVersionResponseDecoder;
+    type ResEncoder = MaybeObjectVersionResponseEncoder;
 }
 
 /// バージョン範囲指定による削除RPC。
@@ -164,12 +180,12 @@ impl Call for DeleteObjectsByRangeRpc {
     const NAME: &'static str = "frugalos.mds.object.delete_by_range";
 
     type Req = RangeRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = RangeRequestDecoder;
+    type ReqEncoder = RangeRequestEncoder;
 
     type Res = Result<Vec<ObjectSummary>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = ObjectSummarySequenceResponseDecoder;
+    type ResEncoder = ObjectSummarySequenceResponseEncoder;
 }
 
 /// 格納済みオブジェクト数取得RPC。
@@ -180,12 +196,12 @@ impl Call for GetObjectCountRpc {
     const NAME: &'static str = "frugalos.mds.object.count";
 
     type Req = ObjectCountRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = ObjectCountRequestDecoder;
+    type ReqEncoder = ObjectCountRequestEncoder;
 
     type Res = Result<u64>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = ObjectCountResponseDecoder;
+    type ResEncoder = ObjectCountResponseEncoder;
 }
 
 /// 接頭辞削除RPC。
@@ -196,12 +212,12 @@ impl Call for DeleteObjectsByPrefixRpc {
     const NAME: &'static str = "frugalos.mds.object.delete_by_prefix";
 
     type Req = PrefixRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = PrefixRequestDecoder;
+    type ReqEncoder = PrefixRequestEncoder;
 
     type Res = Result<DeleteObjectsByPrefixSummary>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = DeleteObjectsByPrefixSummaryResponseDecoder;
+    type ResEncoder = DeleteObjectsByPrefixSummaryResponseEncoder;
 }
 
 /// 接頭辞指定でのオブジェクト一覧取得RPC。
@@ -212,16 +228,37 @@ impl Call for ListObjectsByPrefixRpc {
     const NAME: &'static str = "frugalos.mds.object.list_by_prefix";
 
     type Req = PrefixRequest;
-    type ReqDecoder = BincodeDecoder<Self::Req>;
-    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = PrefixRequestDecoder;
+    type ReqEncoder = PrefixRequestEncoder;
 
     type Res = Result<Vec<ObjectSummary>>;
-    type ResDecoder = BincodeDecoder<Self::Res>;
-    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = ObjectSummarySequenceResponseDecoder;
+    type ResEncoder = ObjectSummarySequenceResponseEncoder;
 
     fn enable_async_response(_: &Self::Res) -> bool {
         true
     }
+}
+
+/// リーダー取得要求。
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetLeaderRequest {
+    pub node_id: LocalNodeId,
+}
+
+/// リーダー再選挙要求。
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecommendToLeaderRequest {
+    pub node_id: LocalNodeId,
+}
+
+/// 最新バージョン取得要求。
+#[allow(missing_docs)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetLatestVersionRequest {
+    pub node_id: LocalNodeId,
 }
 
 /// オブジェクト単位の要求。
