@@ -1,4 +1,6 @@
-//! Decoders and encoders for [libfrugalos.entity.device].
+//! Decoders and encoders for [`libfrugalos::entity::device`](../../entity/device/index.html).
+//!
+//! `package libfrugalos.protobuf.entity.device`.
 
 use bytecodec::combinator::PreEncode;
 use bytecodec::{ErrorKind, Result};

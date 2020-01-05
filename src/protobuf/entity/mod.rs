@@ -1,4 +1,6 @@
-//! Encoders and decoders of Protocol Buffers.
+//! Decoders and encoders for [`libfrugalos::entity`](../../entity/index.html).
+//!
+//! `package libfrugalos.protobuf.entity`.
 
 pub mod bucket;
 pub mod device;

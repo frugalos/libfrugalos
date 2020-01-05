@@ -1,4 +1,4 @@
-//! object
+//! Common decoders and encoders for schemas.
 
 use bytecodec::combinator::PreEncode;
 use protobuf_codec::field::num::F1;

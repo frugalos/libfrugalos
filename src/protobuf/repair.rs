@@ -1,3 +1,5 @@
+//! Decoders and encoders for [`libfrugalos::repair`](../../repair/index.html).
+//!
 //! `package libfrugalos.protobuf.repair;`
 
 use bytecodec::ErrorKind;
@@ -13,7 +15,7 @@ use protobuf_codec::wellknown::google::protobuf::{
 use protobuf::{Uint64NewTypeDecoder, Uint64NewTypeEncoder};
 use repair::{RepairConcurrencyLimit, RepairConfig, RepairIdleness, SegmentGcConcurrencyLimit};
 
-/// Decoder for `RepairConfig`.
+/// Decoder for [`RepairConfig`](../../repair/struct.RepairConfig.html).
 #[derive(Debug, Default)]
 pub struct RepairConfigDecoder {
     inner: MessageDecoder<
@@ -32,7 +34,7 @@ impl_message_decode!(RepairConfigDecoder, RepairConfig, |t: (_, _, _,)| {
     })
 });
 
-/// Encoder for `RepairConfig`.
+/// Encoder for [`RepairConfig`](../../repair/struct.RepairConfig.html).
 #[derive(Debug, Default)]
 pub struct RepairConfigEncoder {
     inner: MessageEncoder<
@@ -51,7 +53,7 @@ impl_sized_message_encode!(RepairConfigEncoder, RepairConfig, |item: Self::Item|
     )
 });
 
-/// Decoder for `RepairIdleness`.
+/// Decoder for [`RepairIdleness`](../../repair/enum.RepairIdleness.html).
 #[derive(Debug, Default)]
 pub struct RepairIdlenessDecoder {
     inner: MessageDecoder<
@@ -81,7 +83,7 @@ impl_message_decode!(RepairIdlenessDecoder, RepairIdleness, |t: Branch2<
     Branch2::B(_) => RepairIdleness::Disabled,
 }));
 
-/// Encoder for `RepairIdleness`.
+/// Encoder for [`RepairIdleness`](../../repair/enum.RepairIdleness.html).
 #[derive(Debug, Default)]
 pub struct RepairIdlenessEncoder {
     inner: MessageEncoder<
@@ -125,7 +127,7 @@ impl ::bytecodec::SizedEncode for RepairIdlenessEncoder {
     }
 }
 
-/// Decoder for `RepairConcurrencyLimit`.
+/// Decoder for [`RepairConcurrencyLimit`](../../repair/struct.RepairConcurrencyLimit.html).
 #[derive(Debug, Default)]
 pub struct RepairConcurrencyLimitDecoder {
     inner: Uint64NewTypeDecoder,
@@ -136,7 +138,7 @@ impl_message_decode!(
     |t: _| Ok(RepairConcurrencyLimit(t))
 );
 
-/// Encoder for `RepairConcurrencyLimit`.
+/// Encoder for [`RepairConcurrencyLimit`](../../repair/struct.RepairConcurrencyLimit.html).
 #[derive(Debug, Default)]
 pub struct RepairConcurrencyLimitEncoder {
     inner: Uint64NewTypeEncoder,
@@ -147,7 +149,7 @@ impl_sized_message_encode!(
     |item: Self::Item| item.0
 );
 
-/// Decoder for `SegmentGcConcurrencyLimit`.
+/// Decoder for [`SegmentGcConcurrencyLimit`](../../repair/struct.SegmentGcConcurrencyLimit.html).
 #[derive(Debug, Default)]
 pub struct SegmentGcConcurrencyLimitDecoder {
     inner: Uint64NewTypeDecoder,
@@ -158,7 +160,7 @@ impl_message_decode!(
     |t: _| Ok(SegmentGcConcurrencyLimit(t))
 );
 
-/// Encoder for `SegmentGcConcurrencyLimit`.
+/// Encoder for [`SegmentGcConcurrencyLimit`](../../repair/struct.SegmentGcConcurrencyLimit.html).
 #[derive(Debug, Default)]
 pub struct SegmentGcConcurrencyLimitEncoder {
     inner: Uint64NewTypeEncoder,

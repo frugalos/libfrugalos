@@ -1,4 +1,6 @@
-//! test
+//! Decoders and encoders for [`libfrugalos::schema::config`](../../schema/config/index.html).
+//!
+//! `package libfrugalos.protobuf.schema.config`.
 
 use bytecodec::combinator::PreEncode;
 use protobuf_codec::field::num::F1;

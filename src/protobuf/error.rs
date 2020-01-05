@@ -1,3 +1,5 @@
+//! Decoders and encoders for [`libfrugalos::Error`](../../struct.Error.html).
+//!
 //! `package libfrugalos.protobuf.error;`
 use bytecodec::combinator::PreEncode;
 use bytecodec::{ByteCount, Decode, Encode, Eos, Result};
@@ -21,7 +23,7 @@ use entity::object::ObjectVersion;
 use protobuf::entity::object::{ObjectVersionDecoder, ObjectVersionEncoder};
 use ErrorKind;
 
-/// Decoder for [Error].
+/// Decoder for [Error](../../struct.Error.html).
 #[derive(Debug, Default)]
 pub struct ErrorDecoder {
     inner: MessageDecoder<
@@ -70,7 +72,7 @@ impl Decode for ErrorDecoder {
 }
 impl MessageDecode for ErrorDecoder {}
 
-/// Encoder for [Error].
+/// Encoder for [Error](../../struct.Error.html).
 #[derive(Debug, Default)]
 pub struct ErrorEncoder {
     inner: MessageEncoder<
@@ -117,7 +119,7 @@ impl Encode for ErrorEncoder {
 }
 impl MessageEncode for ErrorEncoder {}
 
-/// Decoder for [error.ErrorKind].
+/// Decoder for [ErrorKind](../../enum.ErrorKind.html).
 #[derive(Debug, Default)]
 pub struct ErrorKindDecoder {
     inner: MessageDecoder<
@@ -148,22 +150,22 @@ impl_message_decode!(ErrorKindDecoder, ErrorKind, |t: _| {
     })
 });
 
-/// Encoder for [error.ErrorKind].
+/// Encoder for [ErrorKind](../../enum.ErrorKind.html).
 #[derive(Debug, Default)]
 pub struct ErrorKindEncoder {
     inner: MessageEncoder<
         Oneof<(
-            // [ErrorKind::InvalidInput]
+            // InvalidInput
             MessageFieldEncoder<F1, EmptyMessageEncoder>,
-            // [ErrorKind::Unavailable]
+            // Unavailable
             MessageFieldEncoder<F2, EmptyMessageEncoder>,
-            // [ErrorKind::Timeout]
+            // Timeout
             MessageFieldEncoder<F3, EmptyMessageEncoder>,
-            // [ErrorKind::NotLeader]
+            // NotLeader
             MessageFieldEncoder<F4, EmptyMessageEncoder>,
-            // [ErrorKind::Unexpected]
+            // Unexpected
             MessageFieldEncoder<F5, ErrorKindUnexpectedEncoder>,
-            // [ErrorKind::Other]
+            // Other
             MessageFieldEncoder<F6, EmptyMessageEncoder>,
         )>,
     >,
@@ -177,7 +179,7 @@ impl_sized_message_encode!(ErrorKindEncoder, ErrorKind, |item: Self::Item| match
     ErrorKind::Other => Branch6::F(()),
 });
 
-/// Decoder for [ErrorKind::Unexpected].
+/// Decoder for [ErrorKind::Unexpected](../../enum.ErrorKind.html#variant.Unexpected).
 #[derive(Debug, Default)]
 pub struct ErrorKindUnexpectedDecoder {
     inner: MessageDecoder<Optional<FieldDecoder<F1, ObjectVersionDecoder>>>,
@@ -188,7 +190,7 @@ impl_message_decode!(
     |t: Option<u64>| Ok(t.map(ObjectVersion))
 );
 
-/// Encoder for [ErrorKind::Unexpected].
+/// Encoder for [ErrorKind::Unexpected](../../enum.ErrorKind.html#variant.Unexpected).
 #[derive(Debug, Default)]
 pub struct ErrorKindUnexpectedEncoder {
     inner: MessageEncoder<Optional<FieldEncoder<F1, ObjectVersionEncoder>>>,

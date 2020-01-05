@@ -1,4 +1,6 @@
-//! test
+//! Decoders and encoders for [`libmds::schema::mds`](../../schema/mds/index.html).
+//!
+//! `package libmds.protobuf.schema.mds`.
 
 use bytecodec::combinator::PreEncode;
 use protobuf_codec::field::num::{F1, F2, F3, F4, F5};

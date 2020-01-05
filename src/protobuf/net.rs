@@ -1,4 +1,6 @@
-//! `package libfrugalos.protobuf.net;`
+//! Decoders and encoders for [`std::net`](https://doc.rust-lang.org/stable/std/net/index.html).
+//!
+//! `package libfrugalos.protobuf.net`.
 
 use bytecodec::ErrorKind;
 use protobuf_codec::field::branch::Branch2;
@@ -9,7 +11,7 @@ use protobuf_codec::scalar::{StringDecoder, StringEncoder};
 use std::net::SocketAddr;
 use trackable::error::ErrorKindExt;
 
-/// Decoder for [std.net.SocketAddr].
+/// Decoder for [std::net::SocketAddr](https://doc.rust-lang.org/stable/std/net/enum.SocketAddr.html).
 #[derive(Debug, Default)]
 pub struct SocketAddrDecoder {
     inner: MessageDecoder<
@@ -33,7 +35,7 @@ impl_message_decode!(SocketAddrDecoder, SocketAddr, |t: Branch2<
     }
 });
 
-/// Encoder for [std.net.SocketAddr].
+/// Encoder for [std::net::SocketAddr](https://doc.rust-lang.org/stable/std/net/enum.SocketAddr.html).
 #[derive(Debug, Default)]
 pub struct SocketAddrEncoder {
     inner: MessageEncoder<

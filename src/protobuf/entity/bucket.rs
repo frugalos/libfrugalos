@@ -1,4 +1,6 @@
-//! Decoders and encoders for [libfrugalos.entity.bucket].
+//! Decoders and encoders for [`libfrugalos::entity::bucket`](../../entity/bucket/index.html).
+//!
+//! `package libfrugalos.protobuf.entity.bucket`.
 
 use bytecodec::ErrorKind;
 use protobuf_codec::field::branch::Branch3;

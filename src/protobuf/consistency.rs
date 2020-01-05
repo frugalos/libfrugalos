@@ -1,4 +1,6 @@
-//! Decoders and encoders for [libfrugalos.consistency].
+//! Decoders and encoders for [`libfrugalos::consistency`](../../consistency/index.html).
+//!
+//! `package libfrugalos.protobuf.consistency`.
 
 use protobuf_codec::field::branch::Branch4;
 use protobuf_codec::field::num::{F1, F2, F3, F4};
@@ -11,13 +13,16 @@ use protobuf_codec::wellknown::google::protobuf::{EmptyMessageDecoder, EmptyMess
 
 use consistency::ReadConsistency;
 
-/// Decoder for `ReadConsistency`.
+/// Decoder for [`ReadConsistency`](../../consistency/enum.ReadConsistency.html).
 #[derive(Debug, Default)]
 pub struct ReadConsistencyDecoder {
     inner: MessageDecoder<
         Oneof<(
+            // Consistent
             MessageFieldDecoder<F1, EmptyMessageDecoder>,
+            // Stale
             MessageFieldDecoder<F2, EmptyMessageDecoder>,
+            // Quorum
             MessageFieldDecoder<F3, EmptyMessageDecoder>,
             FieldDecoder<F4, Uint32Decoder>,
         )>,
@@ -32,14 +37,18 @@ impl_message_decode!(ReadConsistencyDecoder, ReadConsistency, |t: _| {
     })
 });
 
-/// Encoder for `ReadConsistency`.
+/// Encoder for [`ReadConsistency`](../../consistency/enum.ReadConsistency.html).
 #[derive(Debug, Default)]
 pub struct ReadConsistencyEncoder {
     inner: MessageEncoder<
         Oneof<(
+            // Consistent
             MessageFieldEncoder<F1, EmptyMessageEncoder>,
+            // Stale
             MessageFieldEncoder<F2, EmptyMessageEncoder>,
+            // Quorum
             MessageFieldEncoder<F3, EmptyMessageEncoder>,
+            // Subset
             FieldEncoder<F4, Uint32Encoder>,
         )>,
     >,

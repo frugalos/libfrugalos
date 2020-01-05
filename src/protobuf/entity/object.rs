@@ -1,4 +1,6 @@
-//! Decoders and encoders for [libfrugalos.entity.object].
+//! Decoders and encoders for [`libfrugalos::entity::object`](../../entity/object/index.html).
+//!
+//! `package libfrugalos.protobuf.entity.object`.
 
 use protobuf_codec::field::num::{F1, F2, F3};
 use protobuf_codec::field::{

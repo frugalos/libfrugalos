@@ -1,4 +1,6 @@
-//! `package libfrugalos.protobuf.expect;`
+//! Decoders and encoders for [`libfrugalos::expect`](../../expect/index.html).
+//!
+//! `package libfrugalos.protobuf.expect`.
 
 use bytecodec::combinator::PreEncode;
 use protobuf_codec::field::branch::Branch4;
@@ -11,14 +13,18 @@ use entity::object::ObjectVersion;
 use expect::Expect;
 use protobuf::entity::object::{ObjectVersionsDecoder, ObjectVersionsEncoder};
 
-/// Decoder for `Expect`.
+/// Decoder for [`Expect`](../../expect/enum.Expect.html).
 #[derive(Debug, Default)]
 pub struct ExpectDecoder {
     inner: MessageDecoder<
         Oneof<(
+            // Any
             MessageFieldDecoder<F1, EmptyMessageDecoder>,
+            // None
             MessageFieldDecoder<F2, EmptyMessageDecoder>,
+            // IfMatch
             MessageFieldDecoder<F3, ObjectVersionsDecoder>,
+            // IfNoneMatch
             MessageFieldDecoder<F4, ObjectVersionsDecoder>,
         )>,
     >,
@@ -39,14 +45,18 @@ impl_message_decode!(ExpectDecoder, Expect, |t: Branch4<
     })
 });
 
-/// Encoder for `Expect`.
+/// Encoder for [`Expect`](../../expect/enum.Expect.html).
 #[derive(Debug, Default)]
 pub struct ExpectEncoder {
     inner: MessageEncoder<
         Oneof<(
+            // Any
             MessageFieldEncoder<F1, EmptyMessageEncoder>,
+            // None
             MessageFieldEncoder<F2, EmptyMessageEncoder>,
+            // IfMatch
             MessageFieldEncoder<F3, PreEncode<ObjectVersionsEncoder>>,
+            // IfNoneMatch
             MessageFieldEncoder<F4, PreEncode<ObjectVersionsEncoder>>,
         )>,
     >,

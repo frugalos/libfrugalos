@@ -29,8 +29,16 @@ pub type Uint64NewTypeDecoder = MessageDecoder<FieldDecoder<F1, Uint64Decoder>>;
 /// Encoder for `u64`.
 pub type Uint64NewTypeEncoder = MessageEncoder<FieldEncoder<F1, Uint64Encoder>>;
 
+/// Decoder for [`Vec`](https://doc.rust-lang.org/stable/std/vec/struct.Vec.html).
+///
+/// This decoder decodes the following message:
+///
+/// ```protobuf
+/// message Vec {
+///     repeated T values = 1;
+/// }
+/// ```
 // TODO Vec を汎用化する
-/// Decoder for `Vec`.
 #[derive(Debug, Default)]
 pub struct VecDecoder<D>
 where
@@ -59,7 +67,15 @@ impl<D: MessageDecode> ::bytecodec::Decode for VecDecoder<D> {
 }
 impl<D: MessageDecode> ::protobuf_codec::message::MessageDecode for VecDecoder<D> {}
 
-/// Encoder for `Vec`.
+/// Encoder for [`Vec`](https://doc.rust-lang.org/stable/std/vec/struct.Vec.html).
+///
+/// This encoder encodes the following message:
+///
+/// ```protobuf
+/// message Vec {
+///     repeated T values = 1;
+/// }
+/// ```
 #[derive(Debug, Default)]
 pub struct VecEncoder<E>
 where
@@ -88,7 +104,15 @@ impl<E: MessageEncode> ::bytecodec::Encode for VecEncoder<E> {
 }
 impl<E: MessageEncode> ::protobuf_codec::message::MessageEncode for VecEncoder<E> {}
 
-/// Decoder for `Option`.
+/// Decoder for [`Option`](https://doc.rust-lang.org/stable/std/option/enum.Option.html).
+///
+/// This decoder decodes the following message:
+///
+/// ```protobuf
+/// message Option {
+///     T some = 1;
+/// }
+/// ```
 #[derive(Debug, Default)]
 pub struct OptionDecoder<D>
 where
@@ -117,7 +141,15 @@ impl<D: MessageDecode> ::bytecodec::Decode for OptionDecoder<D> {
 }
 impl<D: MessageDecode> ::protobuf_codec::message::MessageDecode for OptionDecoder<D> {}
 
-/// Encoder for `Option`.
+/// Encoder for [`Option`](https://doc.rust-lang.org/stable/std/option/enum.Option.html).
+///
+/// This encoder encodes the following message:
+///
+/// ```protobuf
+/// message Option {
+///     T some = 1;
+/// }
+/// ```
 #[derive(Debug, Default)]
 pub struct OptionEncoder<E>
 where
@@ -151,7 +183,26 @@ impl<E: MessageEncode + SizedEncode> ::bytecodec::SizedEncode for OptionEncoder<
     }
 }
 
-/// Decoder for `Result`.
+/// Decoder for [`Result`](https://doc.rust-lang.org/stable/std/result/enum.Result.html).
+///
+/// This decoder decodes the following message:
+///
+/// ```protobuf
+/// import "libfrugalos/protobuf/error.proto";
+///
+/// message Result {
+///     T ok = 1;
+///     Error err = 2;
+/// }
+/// ```
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// use libfrugalos::protobuf::ResultDecoder;
+/// use libfrugalos::protobuf::entity::object::ObjectVersionDecoder;
+/// type PutObjectResponseDecoder = ResultDecoder<ObjectVersionDecoder>;
+/// ```
 #[derive(Debug, Default)]
 pub struct ResultDecoder<D>
 where
@@ -189,7 +240,26 @@ impl<D: MessageDecode> ::bytecodec::Decode for ResultDecoder<D> {
 }
 impl<D: MessageDecode> ::protobuf_codec::message::MessageDecode for ResultDecoder<D> {}
 
-/// Encoder for `Result`.
+/// Encoder for [`Result`](https://doc.rust-lang.org/stable/std/result/enum.Result.html).
+///
+/// This encoder encodes the following message:
+///
+/// ```protobuf
+/// import "libfrugalos/protobuf/error.proto";
+///
+/// message Result {
+///     T ok = 1;
+///     Error err = 2;
+/// }
+/// ```
+///
+/// # Examples
+///
+/// ```rust,no_run
+/// use libfrugalos::protobuf::ResultEncoder;
+/// use libfrugalos::protobuf::entity::object::ObjectVersionEncoder;
+/// type PutObjectResponseEncoder = ResultEncoder<ObjectVersionEncoder>;
+/// ```
 #[derive(Debug, Default)]
 pub struct ResultEncoder<E>
 where
