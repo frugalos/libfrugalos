@@ -216,7 +216,7 @@ impl<D: MessageDecode> ::bytecodec::Decode for ResultDecoder<D> {
 
     fn finish_decoding(&mut self) -> ::bytecodec::Result<Self::Item> {
         match track!(self.inner.finish_decoding())? {
-            Branch2::A(value) => Ok(Ok(value)),
+            Branch2::A(value) => Ok(track!(Ok(value))),
             Branch2::B(e) => Ok(track!(Err(e.into()))),
         }
     }
