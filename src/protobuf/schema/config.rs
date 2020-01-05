@@ -16,80 +16,80 @@ use protobuf::{
     OptionDecoder, OptionEncoder, ResultDecoder, ResultEncoder, VecDecoder, VecEncoder,
 };
 
-/// Decoder for `ListServers`.
+/// Decoder for `ListServersRpc`.
 pub type ListServersResponseDecoder = ResultDecoder<VecDecoder<ServerSummaryDecoder>>;
 
-/// Encoder for `ListServers`.
+/// Encoder for `ListServersRpc`.
 pub type ListServersResponseEncoder = ResultEncoder<VecEncoder<ServerSummaryEncoder>>;
 
-/// Decoder for `GetServer`.
+/// Decoder for `GetServerRpc`.
 pub type GetServerResponseDecoder = ResultDecoder<OptionDecoder<ServerDecoder>>;
 
-/// Encoder for `GetServer`.
+/// Encoder for `GetServerRpc`.
 pub type GetServerResponseEncoder = ResultEncoder<OptionEncoder<ServerEncoder>>;
 
-/// Decoder for `PutServer`.
+/// Decoder for `PutServerRpc`.
 pub type PutServerResponseDecoder = ResultDecoder<ServerDecoder>;
 
-/// Encoder for `PutServer`.
+/// Encoder for `PutServerRpc`.
 pub type PutServerResponseEncoder = ResultEncoder<ServerEncoder>;
 
-/// Decoder for `DeleteServer`.
+/// Decoder for `DeleteServerRpc`.
 pub type DeleteServerResponseDecoder = ResultDecoder<OptionDecoder<ServerDecoder>>;
 
-/// Encoder for `DeleteServer`.
+/// Encoder for `DeleteServerRpc`.
 pub type DeleteServerResponseEncoder = ResultEncoder<OptionEncoder<ServerEncoder>>;
 
-/// Decoder for `ListDevices`.
+/// Decoder for `ListDevicesRpc`.
 pub type ListDevicesResponseDecoder = ResultDecoder<VecDecoder<DeviceSummaryDecoder>>;
 
-/// Encoder for `ListDevices`.
+/// Encoder for `ListDevicesRpc`.
 pub type ListDevicesResponseEncoder = ResultEncoder<VecEncoder<DeviceSummaryEncoder>>;
 
-/// Decoder for `GetDevice`.
+/// Decoder for `GetDeviceRpc`.
 pub type GetDeviceResponseDecoder = ResultDecoder<OptionDecoder<DeviceDecoder>>;
 
-/// Encoder for `GetDevice`.
+/// Encoder for `GetDeviceRpc`.
 pub type GetDeviceResponseEncoder = ResultEncoder<OptionEncoder<DeviceEncoder>>;
 
-/// Decoder for `PutDevice`.
+/// Decoder for `PutDeviceRpc`.
 pub type PutDeviceResponseDecoder = ResultDecoder<DeviceDecoder>;
 
-/// Encoder for `PutDevice`.
+/// Encoder for `PutDeviceRpc`.
 pub type PutDeviceResponseEncoder = ResultEncoder<DeviceEncoder>;
 
-/// Decoder for `DeleteDevice`.
+/// Decoder for `DeleteDeviceRpc`.
 pub type DeleteDeviceResponseDecoder = ResultDecoder<OptionDecoder<DeviceDecoder>>;
 
-/// Encoder for `DeleteDevice`.
+/// Encoder for `DeleteDeviceRpc`.
 pub type DeleteDeviceResponseEncoder = ResultEncoder<OptionEncoder<DeviceEncoder>>;
 
-/// Decoder for `ListBuckets`.
+/// Decoder for `ListBucketsRpc`.
 pub type ListBucketsResponseDecoder = ResultDecoder<VecDecoder<BucketSummaryDecoder>>;
 
-/// Encoder for `ListBuckets`.
+/// Encoder for `ListBucketsRpc`.
 pub type ListBucketsResponseEncoder = ResultEncoder<VecEncoder<BucketSummaryEncoder>>;
 
-/// Decoder for `GetBucket`.
+/// Decoder for `GetBucketRpc`.
 pub type GetBucketResponseDecoder = ResultDecoder<OptionDecoder<BucketDecoder>>;
 
-/// Encoder for `GetBucket`.
+/// Encoder for `GetBucketRpc`.
 pub type GetBucketResponseEncoder = ResultEncoder<OptionEncoder<BucketEncoder>>;
 
-/// Decoder for `PutBucket`.
+/// Decoder for `PutBucketRpc`.
 pub type PutBucketResponseDecoder = ResultDecoder<BucketDecoder>;
 
-/// Encoder for `PutBucket`.
+/// Encoder for `PutBucketRpc`.
 pub type PutBucketResponseEncoder = ResultEncoder<BucketEncoder>;
 
-/// Decoder for `DeleteBucket`.
+/// Decoder for `DeleteBucketRpc`.
 pub type DeleteBucketResponseDecoder = ResultDecoder<OptionDecoder<BucketDecoder>>;
 
-/// Encoder for `DeleteBucket`.
+/// Encoder for `DeleteBucketRpc`.
 pub type DeleteBucketResponseEncoder = ResultEncoder<OptionEncoder<BucketEncoder>>;
 
-/// Decoder for `GetLeader`.
+/// Decoder for `GetLeaderRpc`.
 pub type GetLeaderResponseDecoder = ResultDecoder<SocketAddrDecoder>;
 
-/// Encoder for `GetLeader`.
+/// Encoder for `GetLeaderRpc`.
 pub type GetLeaderResponseEncoder = ResultEncoder<SocketAddrEncoder>;

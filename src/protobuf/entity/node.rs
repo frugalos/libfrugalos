@@ -11,13 +11,13 @@ use std::str::FromStr;
 
 use entity::node::RemoteNodeId;
 
-/// Decoder for [LocalNodeId].
+/// Decoder for [`LocalNodeId`](../../../entity/node/type.LocalNodeId.html).
 pub type LocalNodeIdDecoder = StringDecoder;
 
-/// Encoder for [LocalNodeId].
+/// Encoder for [`LocalNodeId`](../../../entity/node/type.LocalNodeId.html).
 pub type LocalNodeIdEncoder = StringEncoder;
 
-/// Decoder for `RemoteNodeId`.
+/// Decoder for [`RemoteNodeId`](../../../entity/node/type.RemoteNodeId.html).
 #[derive(Debug, Default)]
 pub struct RemoteNodeIdDecoder {
     inner: MessageDecoder<
@@ -33,7 +33,7 @@ impl_message_decode!(RemoteNodeIdDecoder, RemoteNodeId, |t: (String, String,)| {
     Ok((addr, t.1))
 });
 
-/// Encoder for `RemoteNodeId`.
+/// Encoder for [`RemoteNodeId`](../../../entity/node/type.RemoteNodeId.html).
 #[derive(Debug, Default)]
 pub struct RemoteNodeIdEncoder {
     inner: MessageEncoder<

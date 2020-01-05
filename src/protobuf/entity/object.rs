@@ -18,19 +18,19 @@ use entity::object::{
     ObjectVersion,
 };
 
-/// Decoder for `ObjectId`.
+/// Decoder for [`ObjectId`](../../../entity/object/type.ObjectId.html).
 pub type ObjectIdDecoder = StringDecoder;
 
-/// Encoder for `ObjectId`.
+/// Encoder for [`ObjectId`](../../../entity/object/type.ObjectId.html).
 pub type ObjectIdEncoder = StringEncoder;
 
-/// Decoder for `ObjectVersion`.
+/// Decoder for [`ObjectVersion`](../../../entity/object/struct.ObjectVersion.html).
 pub type ObjectVersionDecoder = Uint64Decoder;
 
-/// Encoder for `ObjectVersion`.
+/// Encoder for [`ObjectVersion`](../../../entity/object/struct.ObjectVersion.html).
 pub type ObjectVersionEncoder = Uint64Encoder;
 
-/// Decoder for `ObjectVersion`s.
+/// Decoder for [`ObjectVersion`](../../../entity/object/struct.ObjectVersion.html)s.
 // 互換性に注意
 // https://github.com/frugalos/frugalos/blob/346b56c23a0055f160da385668ce163ee8ff6e60/frugalos_mds/src/protobuf.rs#L185
 #[derive(Debug, Default)]
@@ -39,7 +39,7 @@ pub struct ObjectVersionsDecoder {
 }
 impl_message_decode!(ObjectVersionsDecoder, Vec<u64>, |t: _| { Ok(t) });
 
-/// Encoder for `ObjectVersion`s.
+/// Encoder for [`ObjectVersion`](../../../entity/object/struct.ObjectVersion.html)s.
 // 互換性に注意
 // https://github.com/frugalos/frugalos/blob/346b56c23a0055f160da385668ce163ee8ff6e60/frugalos_mds/src/protobuf.rs#L191
 #[derive(Debug, Default)]
@@ -48,7 +48,7 @@ pub struct ObjectVersionsEncoder {
 }
 impl_message_encode!(ObjectVersionsEncoder, Vec<u64>, |item: Self::Item| item);
 
-/// Decoder for `ObjectRange`.
+/// Decoder for [`ObjectRange`](../../../entity/object/struct.ObjectRange.html).
 #[derive(Debug, Default)]
 pub struct ObjectRangeDecoder {
     inner: MessageDecoder<
@@ -66,7 +66,7 @@ impl_message_decode!(ObjectRangeDecoder, Range<ObjectVersion>, |t: (u64, u64)| {
     })
 });
 
-/// Encoder for `ObjectRange`.
+/// Encoder for [`ObjectRange`](../../../entity/object/struct.ObjectRange.html).
 #[derive(Debug, Default)]
 pub struct ObjectRangeEncoder {
     inner: MessageEncoder<
@@ -83,7 +83,7 @@ impl_sized_message_encode!(
     |item: Self::Item| { (item.start.0, item.end.0) }
 );
 
-/// Decoder for `ObjectSummary`.
+/// Decoder for [`ObjectSummary`](../../../entity/object/struct.ObjectSummary.html).
 #[derive(Debug, Default)]
 pub struct ObjectSummaryDecoder {
     inner: MessageDecoder<
@@ -101,7 +101,7 @@ impl_message_decode!(ObjectSummaryDecoder, ObjectSummary, |t: (_, u64)| {
     })
 });
 
-/// Encoder for `ObjectSummary`.
+/// Encoder for [`ObjectSummary`](../../../entity/object/struct.ObjectSummary.html).
 #[derive(Debug, Default)]
 pub struct ObjectSummaryEncoder {
     inner: MessageEncoder<
@@ -116,7 +116,7 @@ impl_sized_message_encode!(ObjectSummaryEncoder, ObjectSummary, |item: Self::Ite
     (item.id, item.version.0)
 });
 
-/// Decoder for `ObjectPrefix`.
+/// Decoder for [`ObjectPrefix`](../../../entity/object/struct.ObjectPrefix.html).
 #[derive(Debug, Default)]
 pub struct ObjectPrefixDecoder {
     inner: MessageDecoder<MaybeDefault<FieldDecoder<F1, StringDecoder>>>,
@@ -126,7 +126,7 @@ impl_message_decode!(ObjectPrefixDecoder, ObjectPrefix, |t: _| {
     Ok(ObjectPrefix(t))
 });
 
-/// Encoder for `ObjectPrefix`.
+/// Encoder for [`ObjectPrefix`](../../../entity/object/struct.ObjectPrefix.html).
 #[derive(Debug, Default)]
 pub struct ObjectPrefixEncoder {
     inner: MessageEncoder<FieldEncoder<F1, StringEncoder>>,
@@ -136,7 +136,7 @@ impl_sized_message_encode!(ObjectPrefixEncoder, ObjectPrefix, |item: Self::Item|
     item.0
 });
 
-/// Decoder for `DeleteObjectsByPrefixSummary`.
+/// Decoder for [`DeleteObjectsByPrefixSummary`](../../../entity/object/struct.DeleteObjectsByPrefixSummary.html).
 #[derive(Debug, Default)]
 pub struct DeleteObjectsByPrefixSummaryDecoder {
     inner: MessageDecoder<MaybeDefault<FieldDecoder<F1, Uint64Decoder>>>,
@@ -148,7 +148,7 @@ impl_message_decode!(
     |total: _| { Ok(DeleteObjectsByPrefixSummary { total }) }
 );
 
-/// Encoder for `DeleteObjectsByPrefixSummary`.
+/// Encoder for [`DeleteObjectsByPrefixSummary`](../../../entity/object/struct.DeleteObjectsByPrefixSummary.html).
 #[derive(Debug, Default)]
 pub struct DeleteObjectsByPrefixSummaryEncoder {
     inner: MessageEncoder<FieldEncoder<F1, Uint64Encoder>>,
@@ -160,7 +160,7 @@ impl_sized_message_encode!(
     |item: Self::Item| { item.total }
 );
 
-/// Decoder for `Metadata`.
+/// Decoder for [`Metadata`](../../../entity/object/struct.Metadata.html).
 #[derive(Debug, Default)]
 pub struct MetadataDecoder {
     inner: MessageDecoder<
@@ -178,7 +178,7 @@ impl_message_decode!(MetadataDecoder, Metadata, |t: (_, _)| {
     })
 });
 
-/// Encoder for `Metadata`.
+/// Encoder for [`Metadata`](../../../entity/object/struct.Metadata.html).
 #[derive(Debug, Default)]
 pub struct MetadataEncoder {
     inner: MessageEncoder<
@@ -193,7 +193,7 @@ impl_sized_message_encode!(MetadataEncoder, Metadata, |item: Self::Item| {
     (item.version.0, item.data)
 });
 
-/// Decoder for `FragmentsSummary`.
+/// Decoder for [`FragmentsSummary`](../../../entity/object/struct.FragmentsSummary.html).
 #[derive(Debug, Default)]
 pub struct FragmentsSummaryDecoder {
     inner: MessageDecoder<
@@ -213,7 +213,7 @@ impl_message_decode!(FragmentsSummaryDecoder, FragmentsSummary, |t: (_, _, _)| {
     })
 });
 
-/// Encoder for `FragmentsSummary`.
+/// Encoder for [`FragmentsSummary`](../../../entity/object/struct.FragmentsSummary.html).
 #[derive(Debug, Default)]
 pub struct FragmentsSummaryEncoder {
     inner: MessageEncoder<

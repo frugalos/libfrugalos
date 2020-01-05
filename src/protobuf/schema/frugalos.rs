@@ -510,7 +510,7 @@ impl_message_encode!(
     }
 );
 
-/// Decoder for a response of `GetObject`.
+/// Decoder for a response of `GetObjectRpc`.
 #[derive(Debug, Default)]
 pub struct GetObjectResponseDecoder {
     inner: ResultDecoder<
@@ -530,7 +530,7 @@ impl_message_decode!(
     |r: Result<Option<(u64, Vec<u8>)>>| Ok(r.map(|v| v.map(|t| (ObjectVersion(t.0), t.1))))
 );
 
-/// Encoder for a response of `GetObject`.
+/// Encoder for a response of `GetObjectRpc`.
 #[derive(Debug, Default)]
 pub struct GetObjectResponseEncoder {
     inner: ResultEncoder<
@@ -550,7 +550,7 @@ impl_sized_message_encode!(
     |item: Self::Item| item.map(|v| v.map(|t| ((t.0).0, t.1)))
 );
 
-/// Decoder for a response of `PutObject`.
+/// Decoder for a response of `PutObjectRpc`.
 #[derive(Debug, Default)]
 pub struct PutObjectResponseDecoder {
     inner: ResultDecoder<
@@ -568,7 +568,7 @@ impl_message_decode!(
     |r: Result<(u64, bool)>| Ok(r.map(|t| (ObjectVersion(t.0), t.1)))
 );
 
-/// Encoder for a response of `PutObject`.
+/// Encoder for a response of `PutObjectRpc`.
 #[derive(Debug, Default)]
 pub struct PutObjectResponseEncoder {
     inner: ResultEncoder<
@@ -586,32 +586,32 @@ impl_sized_message_encode!(
     |item: Self::Item| item.map(|t| ((t.0).0, t.1))
 );
 
-/// Decoder for a response of `CountFragments`.
+/// Decoder for a response of `CountFragmentsRpc`.
 pub type CountFragmentsResponseDecoder = ResultDecoder<OptionDecoder<FragmentsSummaryDecoder>>;
 
-/// Encoder for a response of `CountFragments`.
+/// Encoder for a response of `CountFragmentsRpc`.
 pub type CountFragmentsResponseEncoder = ResultEncoder<OptionEncoder<FragmentsSummaryEncoder>>;
 
-/// Decoder for a response of `Empty`.
+/// Decoder for a response of `DeleteObjectSetFromDeviceRpc`.
 pub type DeleteObjectSetFromDeviceResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
 
-/// Encoder for a response of `Empty`.
+/// Encoder for a response of `DeleteObjectSetFromDeviceRpc`.
 pub type DeleteObjectSetFromDeviceResponseEncoder = ResultEncoder<EmptyMessageEncoder>;
 
-/// Decoder for a response of `Stop`.
+/// Decoder for a response of `StopRpc`.
 pub type StopResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
 
-/// Encoder for a response of `Stop`.
+/// Encoder for a response of `StopRpc`.
 pub type StopResponseEncoder = ResultEncoder<EmptyMessageEncoder>;
 
-/// Decoder for a response of `TakeSnapshot`.
+/// Decoder for a response of `TakeSnapshotRpc`.
 pub type TakeSnapshotResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
 
-/// Encoder for a response of `TakeSnapshot`.
+/// Encoder for a response of `TakeSnapshotRpc`.
 pub type TakeSnapshotResponseEncoder = ResultEncoder<EmptyMessageEncoder>;
 
-/// Decoder for a response of `Empty`.
+/// Decoder for a response of `SetRepairConfigRpc`.
 pub type SetRepairConfigResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
 
-/// Encoder for a response of `Empty`.
+/// Encoder for a response of `SetRepairConfigRpc`.
 pub type SetRepairConfigResponseEncoder = ResultEncoder<EmptyMessageEncoder>;

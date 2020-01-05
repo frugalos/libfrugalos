@@ -371,7 +371,7 @@ pub type MaybeMetadataResponseDecoder = ResultDecoder<OptionDecoder<MetadataDeco
 /// Encoder for a response of `Option<Metadata>`.
 pub type MaybeMetadataResponseEncoder = ResultEncoder<OptionEncoder<MetadataEncoder>>;
 
-/// Decoder for a response of `PutObject`.
+/// Decoder for a response of `PutObjectRpc`.
 #[derive(Debug, Default)]
 pub struct PutObjectResponseDecoder {
     inner: MessageDecoder<
@@ -394,7 +394,7 @@ impl_message_decode!(
     |r: Result<(u64, Option<u64>)>| Ok(r.map(|t| (ObjectVersion(t.0), t.1.map(ObjectVersion))))
 );
 
-/// Encoder for a response of `PutObject`.
+/// Encoder for a response of `PutObjectRpc`.
 #[derive(Debug, Default)]
 pub struct PutObjectResponseEncoder {
     inner: MessageEncoder<
@@ -417,10 +417,10 @@ impl_message_encode!(
     |item: Self::Item| item.map(|t| ((t.0).0, t.1.map(|v| v.0)))
 );
 
-/// Decoder for a response of `ObjectCount`.
+/// Decoder for a response of `ObjectCountRpc`.
 pub type ObjectCountResponseDecoder =
     ResultDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
 
-/// Encoder for a response of `ObjectCount`.
+/// Encoder for a response of `ObjectCountRpc`.
 pub type ObjectCountResponseEncoder =
     ResultEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
