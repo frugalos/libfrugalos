@@ -14,8 +14,7 @@ use protobuf_codec::scalar::{
 };
 use std::time::Duration;
 
-use entity::node::RemoteNodeId;
-use entity::object::{Metadata, ObjectVersion};
+use entity::object::ObjectVersion;
 use protobuf::consistency::{ReadConsistencyDecoder, ReadConsistencyEncoder};
 use protobuf::entity::node::{
     LocalNodeIdDecoder, LocalNodeIdEncoder, RemoteNodeIdDecoder, RemoteNodeIdEncoder,
@@ -360,45 +359,17 @@ impl_sized_message_encode!(
     }
 );
 
-/// Decoder for a response of [GetLeaderRpc].
-#[derive(Debug, Default)]
-pub struct GetLeaderResponseDecoder {
-    inner: MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<RemoteNodeIdDecoder>>>,
-}
-impl_message_decode!(GetLeaderResponseDecoder, Result<RemoteNodeId>, |t: _| Ok(t));
+/// Decoder for a response of `GetLeaderRpc`.
+pub type GetLeaderResponseDecoder = ResultDecoder<RemoteNodeIdDecoder>;
 
-/// Encoder for a response of [GetLeaderRpc].
-#[derive(Debug, Default)]
-pub struct GetLeaderResponseEncoder {
-    inner: MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<RemoteNodeIdEncoder>>>,
-}
-impl_message_encode!(
-    GetLeaderResponseEncoder,
-    Result<RemoteNodeId>,
-    |item: Self::Item| item
-);
+/// Encoder for a response of `GetLeaderRpc`.
+pub type GetLeaderResponseEncoder = ResultEncoder<RemoteNodeIdEncoder>;
 
 /// Decoder for a response of `Option<Metadata>`.
-#[derive(Debug, Default)]
-pub struct MaybeMetadataResponseDecoder {
-    inner: MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<OptionDecoder<MetadataDecoder>>>>,
-}
-impl_message_decode!(
-    MaybeMetadataResponseDecoder,
-    Result<Option<Metadata>>,
-    |t: _| Ok(t)
-);
+pub type MaybeMetadataResponseDecoder = ResultDecoder<OptionDecoder<MetadataDecoder>>;
 
 /// Encoder for a response of `Option<Metadata>`.
-#[derive(Debug, Default)]
-pub struct MaybeMetadataResponseEncoder {
-    inner: MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<OptionEncoder<MetadataEncoder>>>>,
-}
-impl_message_encode!(
-    MaybeMetadataResponseEncoder,
-    Result<Option<Metadata>>,
-    |item: Self::Item| item
-);
+pub type MaybeMetadataResponseEncoder = ResultEncoder<OptionEncoder<MetadataEncoder>>;
 
 /// Decoder for a response of `PutObject`.
 #[derive(Debug, Default)]
@@ -447,23 +418,9 @@ impl_message_encode!(
 );
 
 /// Decoder for a response of `ObjectCount`.
-#[derive(Debug, Default)]
-pub struct ObjectCountResponseDecoder {
-    inner: MessageDecoder<
-        MessageFieldDecoder<F1, ResultDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>>,
-    >,
-}
-impl_message_decode!(ObjectCountResponseDecoder, Result<u64>, |t: _| Ok(t));
+pub type ObjectCountResponseDecoder =
+    ResultDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
 
 /// Encoder for a response of `ObjectCount`.
-#[derive(Debug, Default)]
-pub struct ObjectCountResponseEncoder {
-    inner: MessageEncoder<
-        MessageFieldEncoder<F1, ResultEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>>,
-    >,
-}
-impl_message_encode!(
-    ObjectCountResponseEncoder,
-    Result<u64>,
-    |item: Self::Item| item
-);
+pub type ObjectCountResponseEncoder =
+    ResultEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;

@@ -18,14 +18,16 @@ use protobuf::repair::{RepairConfigDecoder, RepairConfigEncoder};
 use protobuf::schema::frugalos::{
     CountFragmentsRequestDecoder, CountFragmentsRequestEncoder, CountFragmentsResponseDecoder,
     CountFragmentsResponseEncoder, DeleteObjectSetFromDeviceRequestDecoder,
-    DeleteObjectSetFromDeviceRequestEncoder, EmptyResponseDecoder, EmptyResponseEncoder,
-    GetObjectResponseDecoder, GetObjectResponseEncoder, HeadObjectRequestDecoder,
-    HeadObjectRequestEncoder, ListObjectsRequestDecoder, ListObjectsRequestEncoder,
-    ObjectRequestDecoder, ObjectRequestEncoder, PrefixRequestDecoder, PrefixRequestEncoder,
-    PutObjectRequestDecoder, PutObjectRequestEncoder, PutObjectResponseDecoder,
-    PutObjectResponseEncoder, RangeRequestDecoder, RangeRequestEncoder, SegmentRequestDecoder,
-    SegmentRequestEncoder, StopResponseDecoder, StopResponseEncoder, TakeSnapshotResponseDecoder,
-    TakeSnapshotResponseEncoder, VersionRequestDecoder, VersionRequestEncoder,
+    DeleteObjectSetFromDeviceRequestEncoder, DeleteObjectSetFromDeviceResponseDecoder,
+    DeleteObjectSetFromDeviceResponseEncoder, GetObjectResponseDecoder, GetObjectResponseEncoder,
+    HeadObjectRequestDecoder, HeadObjectRequestEncoder, ListObjectsRequestDecoder,
+    ListObjectsRequestEncoder, ObjectRequestDecoder, ObjectRequestEncoder, PrefixRequestDecoder,
+    PrefixRequestEncoder, PutObjectRequestDecoder, PutObjectRequestEncoder,
+    PutObjectResponseDecoder, PutObjectResponseEncoder, RangeRequestDecoder, RangeRequestEncoder,
+    SegmentRequestDecoder, SegmentRequestEncoder, SetRepairConfigResponseDecoder,
+    SetRepairConfigResponseEncoder, StopResponseDecoder, StopResponseEncoder,
+    TakeSnapshotResponseDecoder, TakeSnapshotResponseEncoder, VersionRequestDecoder,
+    VersionRequestEncoder,
 };
 use protobuf::schema::object::{
     DeleteObjectsByPrefixSummaryResponseDecoder, DeleteObjectsByPrefixSummaryResponseEncoder,
@@ -208,8 +210,8 @@ impl Call for DeleteObjectSetFromDeviceRpc {
     type ReqEncoder = DeleteObjectSetFromDeviceRequestEncoder;
 
     type Res = Result<()>;
-    type ResDecoder = EmptyResponseDecoder;
-    type ResEncoder = EmptyResponseEncoder;
+    type ResDecoder = DeleteObjectSetFromDeviceResponseDecoder;
+    type ResEncoder = DeleteObjectSetFromDeviceResponseEncoder;
 }
 
 /// 接頭辞指定でのオブジェクト一覧取得RPC。
@@ -362,7 +364,7 @@ impl Call for StopRpc {
     const NAME: &'static str = "frugalos.ctrl.stop";
 
     type Req = ();
-    type ReqDecoder = EmptyMessageDecoder; // TODO use custom type
+    type ReqDecoder = EmptyMessageDecoder;
     type ReqEncoder = EmptyMessageEncoder;
 
     type Res = Result<()>;
@@ -378,7 +380,7 @@ impl Call for TakeSnapshotRpc {
     const NAME: &'static str = "frugalos.ctrl.take_snapshot";
 
     type Req = ();
-    type ReqDecoder = EmptyMessageDecoder; // TODO use custom type
+    type ReqDecoder = EmptyMessageDecoder;
     type ReqEncoder = EmptyMessageEncoder;
 
     type Res = Result<()>;
@@ -398,6 +400,6 @@ impl Call for SetRepairConfigRpc {
     type ReqDecoder = RepairConfigDecoder;
 
     type Res = Result<()>;
-    type ResEncoder = EmptyResponseEncoder;
-    type ResDecoder = EmptyResponseDecoder;
+    type ResEncoder = SetRepairConfigResponseEncoder;
+    type ResDecoder = SetRepairConfigResponseDecoder;
 }

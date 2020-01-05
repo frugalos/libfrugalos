@@ -16,7 +16,7 @@ use protobuf_codec::scalar::{
 
 use entity::bucket::BucketId;
 use entity::device::DeviceId;
-use entity::object::{FragmentsSummary, ObjectId, ObjectVersion};
+use entity::object::{ObjectId, ObjectVersion};
 use protobuf::consistency::{ReadConsistencyDecoder, ReadConsistencyEncoder};
 use protobuf::deadline::{decode_deadline, encode_deadline, DeadlineDecoder, DeadlineEncoder};
 use protobuf::entity::bucket::{BucketIdDecoder, BucketIdEncoder};
@@ -512,18 +512,13 @@ impl_message_encode!(
 /// Decoder for a response of `GetObject`.
 #[derive(Debug, Default)]
 pub struct GetObjectResponseDecoder {
-    inner: MessageDecoder<
-        MessageFieldDecoder<
-            F1,
-            ResultDecoder<
-                OptionDecoder<
-                    MessageDecoder<
-                        Fields<(
-                            MaybeDefault<FieldDecoder<F1, ObjectVersionDecoder>>,
-                            MaybeDefault<FieldDecoder<F2, BytesDecoder>>,
-                        )>,
-                    >,
-                >,
+    inner: ResultDecoder<
+        OptionDecoder<
+            MessageDecoder<
+                Fields<(
+                    MaybeDefault<FieldDecoder<F1, ObjectVersionDecoder>>,
+                    MaybeDefault<FieldDecoder<F2, BytesDecoder>>,
+                )>,
             >,
         >,
     >,
@@ -537,18 +532,13 @@ impl_message_decode!(
 /// Encoder for a response of `GetObject`.
 #[derive(Debug, Default)]
 pub struct GetObjectResponseEncoder {
-    inner: MessageEncoder<
-        MessageFieldEncoder<
-            F1,
-            ResultEncoder<
-                OptionEncoder<
-                    MessageEncoder<
-                        Fields<(
-                            FieldEncoder<F1, ObjectVersionEncoder>,
-                            FieldEncoder<F2, BytesEncoder>,
-                        )>,
-                    >,
-                >,
+    inner: ResultEncoder<
+        OptionEncoder<
+            MessageEncoder<
+                Fields<(
+                    FieldEncoder<F1, ObjectVersionEncoder>,
+                    FieldEncoder<F2, BytesEncoder>,
+                )>,
             >,
         >,
     >,
@@ -562,17 +552,12 @@ impl_sized_message_encode!(
 /// Decoder for a response of `PutObject`.
 #[derive(Debug, Default)]
 pub struct PutObjectResponseDecoder {
-    inner: MessageDecoder<
-        MessageFieldDecoder<
-            F1,
-            ResultDecoder<
-                MessageDecoder<
-                    Fields<(
-                        MaybeDefault<FieldDecoder<F1, ObjectVersionDecoder>>,
-                        MaybeDefault<FieldDecoder<F2, BoolDecoder>>,
-                    )>,
-                >,
-            >,
+    inner: ResultDecoder<
+        MessageDecoder<
+            Fields<(
+                MaybeDefault<FieldDecoder<F1, ObjectVersionDecoder>>,
+                MaybeDefault<FieldDecoder<F2, BoolDecoder>>,
+            )>,
         >,
     >,
 }
@@ -585,17 +570,12 @@ impl_message_decode!(
 /// Encoder for a response of `PutObject`.
 #[derive(Debug, Default)]
 pub struct PutObjectResponseEncoder {
-    inner: MessageEncoder<
-        MessageFieldEncoder<
-            F1,
-            ResultEncoder<
-                MessageEncoder<
-                    Fields<(
-                        FieldEncoder<F1, ObjectVersionEncoder>,
-                        FieldEncoder<F2, BoolEncoder>,
-                    )>,
-                >,
-            >,
+    inner: ResultEncoder<
+        MessageEncoder<
+            Fields<(
+                FieldEncoder<F1, ObjectVersionEncoder>,
+                FieldEncoder<F2, BoolEncoder>,
+            )>,
         >,
     >,
 }
@@ -606,73 +586,31 @@ impl_sized_message_encode!(
 );
 
 /// Decoder for a response of `CountFragments`.
-#[derive(Debug, Default)]
-pub struct CountFragmentsResponseDecoder {
-    inner: MessageDecoder<
-        MessageFieldDecoder<F1, ResultDecoder<OptionDecoder<FragmentsSummaryDecoder>>>,
-    >,
-}
-impl_message_decode!(
-    CountFragmentsResponseDecoder,
-    Result<Option<FragmentsSummary>>,
-    |r: Result<Option<FragmentsSummary>>| Ok(r)
-);
+pub type CountFragmentsResponseDecoder = ResultDecoder<OptionDecoder<FragmentsSummaryDecoder>>;
 
 /// Encoder for a response of `CountFragments`.
-#[derive(Debug, Default)]
-pub struct CountFragmentsResponseEncoder {
-    inner: MessageEncoder<
-        MessageFieldEncoder<F1, ResultEncoder<OptionEncoder<FragmentsSummaryEncoder>>>,
-    >,
-}
-impl_sized_message_encode!(
-    CountFragmentsResponseEncoder,
-    Result<Option<FragmentsSummary>>,
-    |item: Self::Item| item
-);
-
-/// Decoder for a response of `Stop`.
-#[derive(Debug, Default)]
-pub struct StopResponseDecoder {
-    inner: MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<EmptyMessageDecoder>>>,
-}
-impl_message_decode!(StopResponseDecoder, Result<()>, |r: _| Ok(r));
-
-/// Encoder for a response of `Stop`.
-#[derive(Debug, Default)]
-pub struct StopResponseEncoder {
-    inner: MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<EmptyMessageEncoder>>>,
-}
-impl_sized_message_encode!(StopResponseEncoder, Result<()>, |item: Self::Item| item);
-
-/// Decoder for a response of `TakeSnapshot`.
-#[derive(Debug, Default)]
-pub struct TakeSnapshotResponseDecoder {
-    inner: MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<EmptyMessageDecoder>>>,
-}
-impl_message_decode!(TakeSnapshotResponseDecoder, Result<()>, |r: _| Ok(r));
-
-/// Encoder for a response of `TakeSnapshot`.
-#[derive(Debug, Default)]
-pub struct TakeSnapshotResponseEncoder {
-    inner: MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<EmptyMessageEncoder>>>,
-}
-impl_sized_message_encode!(
-    TakeSnapshotResponseEncoder,
-    Result<()>,
-    |item: Self::Item| item
-);
+pub type CountFragmentsResponseEncoder = ResultEncoder<OptionEncoder<FragmentsSummaryEncoder>>;
 
 /// Decoder for a response of `Empty`.
-#[derive(Debug, Default)]
-pub struct EmptyResponseDecoder {
-    inner: MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<EmptyMessageDecoder>>>,
-}
-impl_message_decode!(EmptyResponseDecoder, Result<()>, |r: _| Ok(r));
+pub type DeleteObjectSetFromDeviceResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
 
 /// Encoder for a response of `Empty`.
-#[derive(Debug, Default)]
-pub struct EmptyResponseEncoder {
-    inner: MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<EmptyMessageEncoder>>>,
-}
-impl_sized_message_encode!(EmptyResponseEncoder, Result<()>, |item: Self::Item| item);
+pub type DeleteObjectSetFromDeviceResponseEncoder = ResultEncoder<EmptyMessageEncoder>;
+
+/// Decoder for a response of `Stop`.
+pub type StopResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
+
+/// Encoder for a response of `Stop`.
+pub type StopResponseEncoder = ResultEncoder<EmptyMessageEncoder>;
+
+/// Decoder for a response of `TakeSnapshot`.
+pub type TakeSnapshotResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
+
+/// Encoder for a response of `TakeSnapshot`.
+pub type TakeSnapshotResponseEncoder = ResultEncoder<EmptyMessageEncoder>;
+
+/// Decoder for a response of `Empty`.
+pub type SetRepairConfigResponseDecoder = ResultDecoder<EmptyMessageDecoder>;
+
+/// Encoder for a response of `Empty`.
+pub type SetRepairConfigResponseEncoder = ResultEncoder<EmptyMessageEncoder>;

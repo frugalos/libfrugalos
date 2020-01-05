@@ -1,11 +1,10 @@
 //! Common decoders and encoders for schemas.
 
-use bytecodec::combinator::PreEncode;
 use protobuf_codec::field::num::F1;
-use protobuf_codec::field::{FieldDecoder, FieldEncoder, MessageFieldDecoder, MessageFieldEncoder};
+use protobuf_codec::field::{FieldDecoder, FieldEncoder};
 use protobuf_codec::message::{MessageDecoder, MessageEncoder};
 
-use entity::object::{DeleteObjectsByPrefixSummary, ObjectSummary, ObjectVersion};
+use entity::object::ObjectVersion;
 use protobuf::entity::object::{
     DeleteObjectsByPrefixSummaryDecoder, DeleteObjectsByPrefixSummaryEncoder, ObjectSummaryDecoder,
     ObjectSummaryEncoder, ObjectVersionDecoder, ObjectVersionEncoder,
@@ -16,38 +15,29 @@ use protobuf::{
 use Result;
 
 /// Decoder for a response of `DeleteObjectsByPrefixSummary`.
-#[derive(Debug, Default)]
-pub struct DeleteObjectsByPrefixSummaryResponseDecoder {
-    inner:
-        MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<DeleteObjectsByPrefixSummaryDecoder>>>,
-}
-impl_message_decode!(
-    DeleteObjectsByPrefixSummaryResponseDecoder,
-    Result<DeleteObjectsByPrefixSummary>,
-    |t: _| Ok(t)
-);
+pub type DeleteObjectsByPrefixSummaryResponseDecoder =
+    ResultDecoder<DeleteObjectsByPrefixSummaryDecoder>;
 
 /// Encoder for a response of `DeleteObjectsByPrefixSummary`.
-#[derive(Debug, Default)]
-pub struct DeleteObjectsByPrefixSummaryResponseEncoder {
-    inner:
-        MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<DeleteObjectsByPrefixSummaryEncoder>>>,
-}
-impl_message_encode!(
-    DeleteObjectsByPrefixSummaryResponseEncoder,
-    Result<DeleteObjectsByPrefixSummary>,
-    |item: Self::Item| item
-);
+pub type DeleteObjectsByPrefixSummaryResponseEncoder =
+    ResultEncoder<DeleteObjectsByPrefixSummaryEncoder>;
+
+/// Decoder for a response of `Option<ObjectSummary>`.
+pub type MaybeObjectSummaryResponseDecoder = ResultDecoder<OptionDecoder<ObjectSummaryDecoder>>;
+
+/// Encoder for a response of `Option<ObjectSummary>`.
+pub type MaybeObjectSummaryResponseEncoder = ResultEncoder<OptionEncoder<ObjectSummaryEncoder>>;
+
+/// Decoder for a response of `Vec<ObjectSummary>`.
+pub type ObjectSummarySequenceResponseDecoder = ResultDecoder<VecDecoder<ObjectSummaryDecoder>>;
+
+/// Encoder for a response of `Vec<ObjectSummary>`.
+pub type ObjectSummarySequenceResponseEncoder = ResultEncoder<VecEncoder<ObjectSummaryEncoder>>;
 
 /// Decoder for a response of `Option<ObjectVersion>`.
 #[derive(Debug, Default)]
 pub struct MaybeObjectVersionResponseDecoder {
-    inner: MessageDecoder<
-        MessageFieldDecoder<
-            F1,
-            ResultDecoder<OptionDecoder<MessageDecoder<FieldDecoder<F1, ObjectVersionDecoder>>>>,
-        >,
-    >,
+    inner: ResultDecoder<OptionDecoder<MessageDecoder<FieldDecoder<F1, ObjectVersionDecoder>>>>,
 }
 impl_message_decode!(
     MaybeObjectVersionResponseDecoder,
@@ -58,63 +48,10 @@ impl_message_decode!(
 /// Encoder for a response of `Option<ObjectVersion>`.
 #[derive(Debug, Default)]
 pub struct MaybeObjectVersionResponseEncoder {
-    inner: MessageEncoder<
-        MessageFieldEncoder<
-            F1,
-            ResultEncoder<OptionEncoder<MessageEncoder<FieldEncoder<F1, ObjectVersionEncoder>>>>,
-        >,
-    >,
+    inner: ResultEncoder<OptionEncoder<MessageEncoder<FieldEncoder<F1, ObjectVersionEncoder>>>>,
 }
 impl_message_encode!(
     MaybeObjectVersionResponseEncoder,
     Result<Option<ObjectVersion>>,
     |item: Self::Item| item.map(|x| x.map(|v| v.0))
-);
-
-/// Decoder for a response of `Option<ObjectSummary>`.
-#[derive(Debug, Default)]
-pub struct MaybeObjectSummaryResponseDecoder {
-    inner:
-        MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<OptionDecoder<ObjectSummaryDecoder>>>>,
-}
-impl_message_decode!(
-    MaybeObjectSummaryResponseDecoder,
-    Result<Option<ObjectSummary>>,
-    |t: _| Ok(t)
-);
-
-/// Encoder for a response of `Option<ObjectSummary>`.
-#[derive(Debug, Default)]
-pub struct MaybeObjectSummaryResponseEncoder {
-    inner:
-        MessageEncoder<MessageFieldEncoder<F1, ResultEncoder<OptionEncoder<ObjectSummaryEncoder>>>>,
-}
-impl_message_encode!(
-    MaybeObjectSummaryResponseEncoder,
-    Result<Option<ObjectSummary>>,
-    |item: Self::Item| item
-);
-
-/// Decoder for a response of `Vec<ObjectSummary>`.
-#[derive(Debug, Default)]
-pub struct ObjectSummarySequenceResponseDecoder {
-    inner: MessageDecoder<MessageFieldDecoder<F1, ResultDecoder<VecDecoder<ObjectSummaryDecoder>>>>,
-}
-impl_message_decode!(
-    ObjectSummarySequenceResponseDecoder,
-    Result<Vec<ObjectSummary>>,
-    |t: _| Ok(t)
-);
-
-/// Encoder for a response of `Vec<ObjectSummary>`.
-#[derive(Debug, Default)]
-pub struct ObjectSummarySequenceResponseEncoder {
-    inner: MessageEncoder<
-        MessageFieldEncoder<F1, PreEncode<ResultEncoder<VecEncoder<ObjectSummaryEncoder>>>>,
-    >,
-}
-impl_message_encode!(
-    ObjectSummarySequenceResponseEncoder,
-    Result<Vec<ObjectSummary>>,
-    |item: Self::Item| item
 );
