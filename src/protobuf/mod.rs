@@ -20,12 +20,14 @@ pub mod deadline;
 pub mod entity;
 pub mod error;
 pub mod expect;
+pub mod multiplicity;
 pub mod net;
 pub mod repair;
 pub mod schema;
 
 /// Decoder for `u64`.
 pub type Uint64NewTypeDecoder = MessageDecoder<FieldDecoder<F1, Uint64Decoder>>;
+
 /// Encoder for `u64`.
 pub type Uint64NewTypeEncoder = MessageEncoder<FieldEncoder<F1, Uint64Encoder>>;
 

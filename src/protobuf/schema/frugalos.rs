@@ -27,6 +27,7 @@ use protobuf::entity::object::{
     ObjectVersionDecoder, ObjectVersionEncoder,
 };
 use protobuf::expect::{ExpectDecoder, ExpectEncoder};
+use protobuf::multiplicity::{MultiplicityConfigDecoder, MultiplicityConfigEncoder};
 use protobuf::{OptionDecoder, OptionEncoder, ResultDecoder, ResultEncoder};
 use protobuf_codec::wellknown::google::protobuf::{EmptyMessageDecoder, EmptyMessageEncoder};
 use schema::frugalos::{
@@ -341,7 +342,7 @@ pub struct PutObjectRequestDecoder {
             MaybeDefault<FieldDecoder<F3, BytesDecoder>>,
             MessageFieldDecoder<F4, DeadlineDecoder>,
             MessageFieldDecoder<F5, ExpectDecoder>,
-            FieldDecoder<F6, Uint32Decoder>, // TODO
+            MessageFieldDecoder<F6, MultiplicityConfigDecoder>,
         )>,
     >,
 }
@@ -360,7 +361,7 @@ impl_message_decode!(PutObjectRequestDecoder, PutObjectRequest, |t: (
         content: t.2,
         deadline,
         expect: t.4,
-        multiplicity_config: Default::default(), // TODO
+        multiplicity_config: t.5,
     })
 });
 
@@ -374,7 +375,7 @@ pub struct PutObjectRequestEncoder {
             FieldEncoder<F3, BytesEncoder>,
             MessageFieldEncoder<F4, DeadlineEncoder>,
             MessageFieldEncoder<F5, PreEncode<ExpectEncoder>>,
-            FieldEncoder<F6, Uint32Encoder>, // TODO
+            MessageFieldEncoder<F6, MultiplicityConfigEncoder>,
         )>,
     >,
 }
@@ -388,7 +389,7 @@ impl_sized_message_encode!(
             item.content,
             encode_deadline(item.deadline),
             item.expect,
-            Default::default(), // TODO
+            item.multiplicity_config,
         )
     }
 );
