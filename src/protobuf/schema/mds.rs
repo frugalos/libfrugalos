@@ -312,7 +312,7 @@ pub struct PutObjectRequestDecoder {
             MaybeDefault<FieldDecoder<F2, StringDecoder>>,
             MaybeDefault<FieldDecoder<F3, BytesDecoder>>,
             MessageFieldDecoder<F4, ExpectDecoder>,
-            FieldDecoder<F5, Uint64Decoder>, // TODO
+            FieldDecoder<F5, Uint64Decoder>,
         )>,
     >,
 }
@@ -341,7 +341,7 @@ pub struct PutObjectRequestEncoder {
             FieldEncoder<F2, StringEncoder>,
             FieldEncoder<F3, BytesEncoder>,
             MessageFieldEncoder<F4, ExpectEncoder>,
-            FieldEncoder<F5, Uint64Encoder>, // TODO
+            FieldEncoder<F5, Uint64Encoder>,
         )>,
     >,
 }

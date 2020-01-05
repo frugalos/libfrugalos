@@ -7,10 +7,9 @@ use protobuf_codec::field::branch::Branch2;
 use protobuf_codec::field::num::{F1, F2};
 use protobuf_codec::field::{MessageFieldDecoder, MessageFieldEncoder, Oneof, Optional, Repeated};
 use protobuf_codec::message::{MessageDecode, MessageDecoder, MessageEncode, MessageEncoder};
-use trackable::error::ErrorKindExt;
 
 use protobuf::error::{ErrorDecoder, ErrorEncoder};
-use {ErrorKind, Result};
+use Result;
 
 pub mod consistency;
 pub mod deadline;
@@ -218,8 +217,7 @@ impl<D: MessageDecode> ::bytecodec::Decode for ResultDecoder<D> {
     fn finish_decoding(&mut self) -> ::bytecodec::Result<Self::Item> {
         match track!(self.inner.finish_decoding())? {
             Branch2::A(value) => Ok(Ok(value)),
-            // TODO InvalidInput 再検討
-            Branch2::B(e) => Ok(track!(Err(ErrorKind::InvalidInput.takes_over(e).into()))),
+            Branch2::B(e) => Ok(track!(Err(e.into()))),
         }
     }
 
@@ -275,10 +273,7 @@ impl<E: MessageEncode> ::bytecodec::Encode for ResultEncoder<E> {
     fn start_encoding(&mut self, item: Self::Item) -> ::bytecodec::Result<()> {
         let item = match item {
             Ok(x) => Branch2::A(x),
-            Err(e) => {
-                // TODO InvalidInput 再検討
-                Branch2::B(ErrorKind::InvalidInput.takes_over(e))
-            }
+            Err(e) => Branch2::B(e.into()),
         };
         track!(self.inner.start_encoding(item))
     }
