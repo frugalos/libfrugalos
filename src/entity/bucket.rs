@@ -36,7 +36,7 @@ pub enum BucketKind {
 }
 impl Default for BucketKind {
     fn default() -> Self {
-        BucketKind::Dispersed
+        BucketKind::Metadata
     }
 }
 
