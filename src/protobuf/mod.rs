@@ -292,3 +292,104 @@ impl<E: MessageEncode + SizedEncode> ::bytecodec::SizedEncode for ResultEncoder<
         self.inner.exact_requiring_bytes()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use protobuf_codec::field::{FieldDecoder, FieldEncoder};
+    use protobuf_codec::scalar::{Uint64Decoder, Uint64Encoder};
+    use trackable::result::TestResult;
+
+    use {Error, ErrorKind};
+
+    #[test]
+    fn encode_empty_vec_works() -> TestResult {
+        type Decoder = VecDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
+        type Encoder = VecEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
+        let mut buf = Vec::new();
+        let mut decoder = Decoder::default();
+        let mut encoder = track!(Encoder::with_item(vec![]))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, []);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        let expected: Vec<u64> = vec![];
+        assert_eq!(expected, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_vec_works() -> TestResult {
+        type Decoder = VecDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
+        type Encoder = VecEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
+        let mut buf = Vec::new();
+        let mut decoder = Decoder::default();
+        let mut encoder = track!(Encoder::with_item(vec![3, 9, 8]))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 2, 8, 3, 10, 2, 8, 9, 10, 2, 8, 8]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(vec![3, 9, 8], message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_some_works() -> TestResult {
+        type Decoder = OptionDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
+        type Encoder = OptionEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
+        let mut buf = Vec::new();
+        let mut decoder = Decoder::default();
+        let mut encoder = track!(Encoder::with_item(Some(9)))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 2, 8, 9]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(Some(9), message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_none_works() -> TestResult {
+        type Decoder = OptionDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
+        type Encoder = OptionEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
+        let mut buf = Vec::new();
+        let mut decoder = Decoder::default();
+        let mut encoder = track!(Encoder::with_item(None))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, []);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(None, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_ok_works() -> TestResult {
+        type Decoder = ResultDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
+        type Encoder = ResultEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
+        let mut buf = Vec::new();
+        let mut decoder = Decoder::default();
+        let mut encoder = track!(Encoder::with_item(Ok(7)))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 2, 8, 7]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(7, message.unwrap_or(0));
+        Ok(())
+    }
+
+    #[test]
+    fn encode_err_works() -> TestResult {
+        type Decoder = ResultDecoder<MessageDecoder<FieldDecoder<F1, Uint64Decoder>>>;
+        type Encoder = ResultEncoder<MessageEncoder<FieldEncoder<F1, Uint64Encoder>>>;
+        let mut buf = Vec::new();
+        let mut decoder = Decoder::default();
+        let mut encoder = track!(Encoder::with_item(Err(ErrorKind::Timeout.into())))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [18, 4, 10, 2, 26, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        if let Err(e) = message {
+            assert_eq!(ErrorKind::Timeout, *e.kind());
+            Ok(())
+        } else {
+            Err(Error::from(ErrorKind::Other).into())
+        }
+    }
+}

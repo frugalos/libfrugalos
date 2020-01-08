@@ -49,3 +49,27 @@ impl_sized_message_encode!(
         )
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_works() -> TestResult {
+        let mut buf = Vec::new();
+        let config = MultiplicityConfig {
+            inner_retry_count: InnerRetryCount(1),
+            number_of_ensured_saves: NumberOfEnsuredSaves(3),
+        };
+        let mut decoder = MultiplicityConfigDecoder::default();
+        let mut encoder = track!(MultiplicityConfigEncoder::with_item(config.clone()))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [8, 1, 16, 3]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(config, message);
+        Ok(())
+    }
+}

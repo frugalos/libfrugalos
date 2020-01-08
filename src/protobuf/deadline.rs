@@ -38,3 +38,24 @@ pub fn encode_deadline(deadline: Duration) -> DurationMessage {
     // FIXME: Result を返すようにする
     DurationMessage::from_duration(deadline).unwrap_or_else(|e| unreachable!("{:?}", e))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn decode_works() -> TestResult {
+        let duration = track!(DurationMessage::new(5, 0))?;
+        let message = track!(decode_deadline(duration))?;
+        assert_eq!(Duration::from_secs(5), message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_works() {
+        let duration = Duration::from_secs(5);
+        let message = encode_deadline(duration);
+        assert_eq!(DurationMessage::new(5, 0).unwrap(), message);
+    }
+}

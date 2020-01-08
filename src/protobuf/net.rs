@@ -51,3 +51,40 @@ impl_sized_message_encode!(SocketAddrEncoder, SocketAddr, |item: Self::Item| {
         SocketAddr::V6(addr) => Branch2::B(addr.to_string()),
     }
 });
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_v4_works() -> TestResult {
+        let mut buf = Vec::new();
+        let addr: SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        let mut decoder = SocketAddrDecoder::default();
+        let mut encoder = track!(SocketAddrEncoder::with_item(addr.clone()))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [10, 14, 49, 50, 55, 46, 48, 46, 48, 46, 49, 58, 56, 48, 56, 48]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(addr, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_v6_works() -> TestResult {
+        let mut buf = Vec::new();
+        let addr: SocketAddr = "[::1]:12345".parse().unwrap();
+        let mut decoder = SocketAddrDecoder::default();
+        let mut encoder = track!(SocketAddrEncoder::with_item(addr.clone()))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [18, 11, 91, 58, 58, 49, 93, 58, 49, 50, 51, 52, 53]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(addr, message);
+        Ok(())
+    }
+}

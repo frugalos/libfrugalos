@@ -69,3 +69,63 @@ impl_sized_message_encode!(ExpectEncoder, Expect, |item: Self::Item| {
         Expect::IfNoneMatch(versions) => Branch4::D(versions.into_iter().map(|v| v.0).collect()),
     }
 });
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_any_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = ExpectDecoder::default();
+        let mut encoder = track!(ExpectEncoder::with_item(Expect::Any))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(Expect::Any, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_none_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = ExpectDecoder::default();
+        let mut encoder = track!(ExpectEncoder::with_item(Expect::None))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [18, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(Expect::None, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_if_match_works() -> TestResult {
+        let mut buf = Vec::new();
+        let versions = vec![ObjectVersion(1), ObjectVersion(2)];
+        let mut decoder = ExpectDecoder::default();
+        let mut encoder = track!(ExpectEncoder::with_item(Expect::IfMatch(versions.clone())))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [26, 4, 10, 2, 1, 2]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(Expect::IfMatch(versions), message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_if_none_match_works() -> TestResult {
+        let mut buf = Vec::new();
+        let versions = vec![ObjectVersion(2)];
+        let mut decoder = ExpectDecoder::default();
+        let mut encoder = track!(ExpectEncoder::with_item(Expect::IfNoneMatch(
+            versions.clone()
+        )))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [34, 3, 10, 1, 2]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(Expect::IfNoneMatch(versions), message);
+        Ok(())
+    }
+}

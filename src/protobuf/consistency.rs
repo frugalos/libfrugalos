@@ -65,3 +65,63 @@ impl_sized_message_encode!(
         }
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_consistent_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = ReadConsistencyDecoder::default();
+        let mut encoder = track!(ReadConsistencyEncoder::with_item(
+            ReadConsistency::Consistent
+        ))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(ReadConsistency::Consistent, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_stale_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = ReadConsistencyDecoder::default();
+        let mut encoder = track!(ReadConsistencyEncoder::with_item(ReadConsistency::Stale))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [18, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(ReadConsistency::Stale, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_quorum_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = ReadConsistencyDecoder::default();
+        let mut encoder = track!(ReadConsistencyEncoder::with_item(ReadConsistency::Quorum))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [26, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(ReadConsistency::Quorum, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_subset_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = ReadConsistencyDecoder::default();
+        let mut encoder = track!(ReadConsistencyEncoder::with_item(ReadConsistency::Subset(
+            5
+        )))?;
+        track!(encoder.inner.encode_all(&mut buf))?;
+        assert_eq!(buf, [32, 5]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(ReadConsistency::Subset(5), message);
+        Ok(())
+    }
+}
