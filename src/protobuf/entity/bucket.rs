@@ -316,3 +316,150 @@ impl_sized_message_encode!(
         )
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_bucket_summary_works() -> TestResult {
+        let summary = BucketSummary {
+            id: "bucket1".to_owned(),
+            kind: BucketKind::Metadata,
+            device: "device1".to_owned(),
+        };
+        let mut buf = Vec::new();
+        let mut decoder = BucketSummaryDecoder::default();
+        let mut encoder = track!(BucketSummaryEncoder::with_item(summary.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [
+                10, 7, 98, 117, 99, 107, 101, 116, 49, 16, 0, 26, 7, 100, 101, 118, 105, 99, 101,
+                49
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(summary.id, message.id);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_metadata_bucket_works() -> TestResult {
+        let bucket = MetadataBucket {
+            id: "bucket1".to_owned(),
+            seqno: 1,
+            device: "device1".to_owned(),
+            segment_count: 10,
+            tolerable_faults: 2,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = MetadataBucketDecoder::default();
+        let mut encoder = track!(MetadataBucketEncoder::with_item(bucket.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [
+                10, 7, 98, 117, 99, 107, 101, 116, 49, 16, 1, 26, 7, 100, 101, 118, 105, 99, 101,
+                49, 32, 10, 40, 2
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(bucket.id, message.id);
+        assert_eq!(bucket.seqno, message.seqno);
+        assert_eq!(bucket.device, message.device);
+        assert_eq!(bucket.segment_count, message.segment_count);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_replicated_bucket_works() -> TestResult {
+        let bucket = ReplicatedBucket {
+            id: "bucket1".to_owned(),
+            seqno: 1,
+            device: "device1".to_owned(),
+            segment_count: 10,
+            tolerable_faults: 2,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = ReplicatedBucketDecoder::default();
+        let mut encoder = track!(ReplicatedBucketEncoder::with_item(bucket.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [
+                10, 7, 98, 117, 99, 107, 101, 116, 49, 16, 1, 26, 7, 100, 101, 118, 105, 99, 101,
+                49, 32, 10, 40, 2
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(bucket.id, message.id);
+        assert_eq!(bucket.seqno, message.seqno);
+        assert_eq!(bucket.device, message.device);
+        assert_eq!(bucket.segment_count, message.segment_count);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_dispersed_bucket_works() -> TestResult {
+        let bucket = DispersedBucket {
+            id: "bucket1".to_owned(),
+            seqno: 1,
+            device: "device1".to_owned(),
+            segment_count: 10,
+            tolerable_faults: 2,
+            data_fragment_count: 6,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = DispersedBucketDecoder::default();
+        let mut encoder = track!(DispersedBucketEncoder::with_item(bucket.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [
+                10, 7, 98, 117, 99, 107, 101, 116, 49, 16, 1, 26, 7, 100, 101, 118, 105, 99, 101,
+                49, 32, 10, 40, 2, 48, 6
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(bucket.id, message.id);
+        assert_eq!(bucket.seqno, message.seqno);
+        assert_eq!(bucket.device, message.device);
+        assert_eq!(bucket.segment_count, message.segment_count);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_bucket_works() -> TestResult {
+        let bucket = Bucket::Dispersed(DispersedBucket {
+            id: "bucket1".to_owned(),
+            seqno: 3,
+            device: "device1".to_owned(),
+            segment_count: 30,
+            tolerable_faults: 4,
+            data_fragment_count: 8,
+        });
+        let mut buf = Vec::new();
+        let mut decoder = BucketDecoder::default();
+        let mut encoder = track!(BucketEncoder::with_item(bucket.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [
+                26, 26, 10, 7, 98, 117, 99, 107, 101, 116, 49, 16, 3, 26, 7, 100, 101, 118, 105,
+                99, 101, 49, 32, 30, 40, 4, 48, 8
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(bucket.id(), message.id());
+        assert_eq!(bucket.seqno(), message.seqno());
+        assert_eq!(bucket.kind(), message.kind());
+        assert_eq!(bucket.device(), message.device());
+        assert_eq!(bucket.segment_count(), message.segment_count());
+        assert_eq!(bucket.device_group_size(), message.device_group_size());
+        Ok(())
+    }
+}

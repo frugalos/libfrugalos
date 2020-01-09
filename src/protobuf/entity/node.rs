@@ -47,3 +47,43 @@ pub struct RemoteNodeIdEncoder {
 impl_sized_message_encode!(RemoteNodeIdEncoder, RemoteNodeId, |item: Self::Item| {
     (item.0.to_string(), item.1)
 });
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    use entity::node::LocalNodeId;
+
+    #[test]
+    fn encode_local_node_id_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = LocalNodeIdDecoder::default();
+        let node_id: LocalNodeId = "1".into();
+        let mut encoder = track!(LocalNodeIdEncoder::with_item(node_id.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [1, 49]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(node_id, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_remote_node_id_works() -> TestResult {
+        let mut buf = Vec::new();
+        let mut decoder = RemoteNodeIdDecoder::default();
+        let addr: SocketAddr = track_any_err!("127.0.0.1:8000".parse())?;
+        let node_id: LocalNodeId = "0".into();
+        let mut encoder = track!(RemoteNodeIdEncoder::with_item((addr, node_id.clone())))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [10, 14, 49, 50, 55, 46, 48, 46, 48, 46, 49, 58, 56, 48, 48, 48, 18, 1, 48]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!((addr, node_id), message);
+        Ok(())
+    }
+}

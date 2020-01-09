@@ -236,3 +236,85 @@ impl_sized_message_encode!(
         )
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_object_range_works() -> TestResult {
+        let range = Range {
+            start: ObjectVersion(1),
+            end: ObjectVersion(10),
+        };
+        let mut buf = Vec::new();
+        let mut decoder = ObjectRangeDecoder::default();
+        let mut encoder = track!(ObjectRangeEncoder::with_item(range.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [8, 1, 16, 10]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(range, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_object_summary_works() -> TestResult {
+        let summary = ObjectSummary {
+            id: "test1".to_owned(),
+            version: ObjectVersion(1),
+        };
+        let mut buf = Vec::new();
+        let mut decoder = ObjectSummaryDecoder::default();
+        let mut encoder = track!(ObjectSummaryEncoder::with_item(summary.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 5, 116, 101, 115, 116, 49, 16, 1]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(summary.id, message.id);
+        assert_eq!(summary.version, message.version);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_object_versions_works() -> TestResult {
+        let versions = vec![1, 3, 2];
+        let mut buf = Vec::new();
+        let mut decoder = ObjectVersionsDecoder::default();
+        let mut encoder = track!(ObjectVersionsEncoder::with_item(versions.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 3, 1, 3, 2]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(versions, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_object_prefix_works() -> TestResult {
+        let prefix = ObjectPrefix("test".to_owned());
+        let mut buf = Vec::new();
+        let mut decoder = ObjectPrefixDecoder::default();
+        let mut encoder = track!(ObjectPrefixEncoder::with_item(prefix.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 4, 116, 101, 115, 116]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(prefix, message);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_delete_objects_by_prefix_summary_works() -> TestResult {
+        let summary = DeleteObjectsByPrefixSummary { total: 3 };
+        let mut buf = Vec::new();
+        let mut decoder = DeleteObjectsByPrefixSummaryDecoder::default();
+        let mut encoder = track!(DeleteObjectsByPrefixSummaryEncoder::with_item(
+            summary.clone()
+        ))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [8, 3]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(summary.total, message.total);
+        Ok(())
+    }
+}

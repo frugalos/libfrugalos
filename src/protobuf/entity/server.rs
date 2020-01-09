@@ -93,3 +93,53 @@ pub struct ServerEncoder {
 impl_sized_message_encode!(ServerEncoder, Server, |item: Self::Item| {
     (item.id, item.seqno, item.host.to_string(), item.port as u32)
 });
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_server_summary_works() -> TestResult {
+        let summary = ServerSummary {
+            id: "server1".to_owned(),
+        };
+        let mut buf = Vec::new();
+        let mut decoder = ServerSummaryDecoder::default();
+        let mut encoder = track!(ServerSummaryEncoder::with_item(summary.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 7, 115, 101, 114, 118, 101, 114, 49]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(summary.id, message.id);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_server_works() -> TestResult {
+        let server = Server {
+            id: "server1".to_owned(),
+            seqno: 1,
+            host: track_any_err!("127.0.0.1".parse())?,
+            port: 9302,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = ServerDecoder::default();
+        let mut encoder = track!(ServerEncoder::with_item(server.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            [
+                10, 7, 115, 101, 114, 118, 101, 114, 49, 16, 1, 26, 9, 49, 50, 55, 46, 48, 46, 48,
+                46, 49, 32, 214, 72
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(server.id, message.id);
+        assert_eq!(server.seqno, message.seqno);
+        assert_eq!(server.host, message.host);
+        assert_eq!(server.port, message.port);
+        Ok(())
+    }
+}

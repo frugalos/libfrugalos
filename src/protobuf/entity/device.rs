@@ -404,3 +404,149 @@ impl ::bytecodec::SizedEncode for FileDeviceEncoder {
         self.inner.exact_requiring_bytes()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use bytecodec::io::{IoDecodeExt, IoEncodeExt};
+    use bytecodec::EncodeExt;
+    use trackable::result::TestResult;
+
+    #[test]
+    fn encode_device_summary_works() -> TestResult {
+        let summary = DeviceSummary {
+            id: "device1".to_owned(),
+            server: None,
+            kind: DeviceKind::Virtual,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = DeviceSummaryDecoder::default();
+        let mut encoder = track!(DeviceSummaryEncoder::with_item(summary.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(buf, [10, 7, 100, 101, 118, 105, 99, 101, 49, 24, 0]);
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(summary.id, message.id);
+        assert_eq!(summary.server, message.server);
+        assert_eq!(summary.kind, message.kind);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_virtual_device_works() -> TestResult {
+        let mut children = BTreeSet::new();
+        children.insert("device2".to_owned());
+        children.insert("device3".to_owned());
+        let device = VirtualDevice {
+            id: "device1".to_owned(),
+            seqno: 1,
+            weight: Weight::Auto,
+            children,
+            policy: SegmentAllocationPolicy::ScatterIfPossible,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = VirtualDeviceDecoder::default();
+        let mut encoder = track!(VirtualDeviceEncoder::with_item(device.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            vec![
+                10, 7, 100, 101, 118, 105, 99, 101, 49, 16, 1, 26, 2, 10, 0, 34, 7, 100, 101, 118,
+                105, 99, 101, 50, 34, 7, 100, 101, 118, 105, 99, 101, 51, 40, 0
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(device.id, message.id);
+        assert_eq!(device.seqno, message.seqno);
+        assert!(message.weight.is_auto());
+        assert_eq!(device.children, message.children);
+        assert_eq!(device.policy, message.policy);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_memory_device_works() -> TestResult {
+        let device = MemoryDevice {
+            id: "device1".to_owned(),
+            seqno: 1,
+            weight: Weight::Absolute(3),
+            server: "server1".to_owned(),
+            capacity: 300,
+        };
+        let mut buf = Vec::new();
+        let mut decoder = MemoryDeviceDecoder::default();
+        let mut encoder = track!(MemoryDeviceEncoder::with_item(device.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            vec![
+                10, 7, 100, 101, 118, 105, 99, 101, 49, 16, 1, 26, 2, 16, 3, 34, 7, 115, 101, 114,
+                118, 101, 114, 49, 40, 172, 2
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(device.id, message.id);
+        assert_eq!(device.seqno, message.seqno);
+        assert!(message.weight.is_absolute());
+        assert_eq!(device.server, message.server);
+        assert_eq!(device.capacity, message.capacity);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_file_device_works() -> TestResult {
+        let device = FileDevice {
+            id: "device1".to_owned(),
+            seqno: 1,
+            weight: Weight::Absolute(3),
+            server: "server1".to_owned(),
+            capacity: 300,
+            filepath: "/tmp/dev.lusf".into(),
+        };
+        let mut buf = Vec::new();
+        let mut decoder = FileDeviceDecoder::default();
+        let mut encoder = track!(FileDeviceEncoder::with_item(device.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            vec![
+                10, 7, 100, 101, 118, 105, 99, 101, 49, 16, 1, 26, 2, 16, 3, 34, 7, 115, 101, 114,
+                118, 101, 114, 49, 40, 172, 2, 50, 13, 47, 116, 109, 112, 47, 100, 101, 118, 46,
+                108, 117, 115, 102
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(device.id, message.id);
+        assert_eq!(device.seqno, message.seqno);
+        assert!(message.weight.is_absolute());
+        assert_eq!(device.server, message.server);
+        assert_eq!(device.capacity, message.capacity);
+        assert_eq!(device.filepath, message.filepath);
+        Ok(())
+    }
+
+    #[test]
+    fn encode_device_works() -> TestResult {
+        let device = Device::Memory(MemoryDevice {
+            id: "device1".to_owned(),
+            seqno: 3,
+            weight: Weight::Relative(0.3),
+            server: "server1".to_owned(),
+            capacity: 300,
+        });
+        let mut buf = Vec::new();
+        let mut decoder = DeviceDecoder::default();
+        let mut encoder = track!(DeviceEncoder::with_item(device.clone()))?;
+        track!(encoder.encode_all(&mut buf))?;
+        assert_eq!(
+            buf,
+            vec![
+                18, 34, 10, 7, 100, 101, 118, 105, 99, 101, 49, 16, 3, 26, 9, 25, 51, 51, 51, 51,
+                51, 51, 211, 63, 34, 7, 115, 101, 114, 118, 101, 114, 49, 40, 172, 2
+            ]
+        );
+        let message = track!(decoder.decode_exact(&buf[..]))?;
+        assert_eq!(device.id(), message.id());
+        assert_eq!(device.seqno(), message.seqno());
+        Ok(())
+    }
+}

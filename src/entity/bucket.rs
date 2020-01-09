@@ -22,7 +22,7 @@ pub struct BucketSummary {
 }
 
 /// バケツの種類。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum BucketKind {
     /// メタデータ用バケツ。
