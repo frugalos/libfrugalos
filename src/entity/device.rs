@@ -15,7 +15,7 @@ pub type DeviceId = String;
 pub type DeviceNo = u32;
 
 /// デバイスの内容の要約。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct DeviceSummary {
     /// デバイスのID。
     pub id: DeviceId,
@@ -32,7 +32,7 @@ pub struct DeviceSummary {
 }
 
 /// デバイスの種類。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum DeviceKind {
     /// 仮想デバイス。
@@ -43,6 +43,11 @@ pub enum DeviceKind {
 
     /// ファイルデバイス。
     File,
+}
+impl Default for DeviceKind {
+    fn default() -> Self {
+        DeviceKind::Virtual
+    }
 }
 
 /// デバイス。
@@ -294,6 +299,33 @@ impl Weight {
             Weight::Relative(r) => (base as f64 * r) as u64,
         }
     }
+
+    /// 自動計算であれば true を返す。
+    #[allow(dead_code)]
+    pub(crate) fn is_auto(&self) -> bool {
+        if let Weight::Auto = self {
+            return true;
+        }
+        false
+    }
+
+    /// 絶対値の重みであれば true を返す。
+    #[allow(dead_code)]
+    pub(crate) fn is_absolute(&self) -> bool {
+        if let Weight::Absolute(_) = self {
+            return true;
+        }
+        false
+    }
+
+    /// 相対値の重みであれば true を返す。
+    #[allow(dead_code)]
+    pub(crate) fn is_relative(&self) -> bool {
+        if let Weight::Relative(_) = self {
+            return true;
+        }
+        false
+    }
 }
 impl Default for Weight {
     fn default() -> Self {
@@ -302,7 +334,7 @@ impl Default for Weight {
 }
 
 /// セグメントの割当方針。
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum SegmentAllocationPolicy {
     /// 可能であれば、同じセグメント内のノード群には別々のデバイスを割り当てる。
     #[serde(rename = "SCATTER_IF_POSSIBLE")]

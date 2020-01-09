@@ -17,6 +17,7 @@ fibers = "0.1"
 fibers_rpc = "0.2"
 futures = "0.1"
 libc = "0.2"
+protobuf_codec = "0.2"
 serde = "1"
 serde_derive = "1"
 trackable = { version = "0.2", features = ["serialize"] }
