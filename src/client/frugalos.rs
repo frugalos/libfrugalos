@@ -275,13 +275,10 @@ impl Client {
         )
     }
 
-    /// Executes `DeleteBucketContentsRpc`
-    pub fn delete_bucket_contents(
-        &self,
-        bucket_seqno: u32,
-    ) -> impl Future<Item = (), Error = Error> {
+    /// Executes `TruncateBucketRpc`
+    pub fn truncate_bucket(&self, bucket_seqno: u32) -> impl Future<Item = (), Error = Error> {
         Response(
-            frugalos::DeleteBucketContentsRpc::client(&self.rpc_service)
+            frugalos::TruncateBucketRpc::client(&self.rpc_service)
                 .call(self.server, frugalos::BucketSeqnoRequest { bucket_seqno }),
         )
     }

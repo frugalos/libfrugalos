@@ -385,10 +385,10 @@ impl Call for SetRepairConfigRpc {
 
 /// バケツのデータ削除要求
 /// バケツ削除処理でデータ削除処理が失敗した場合に実施を想定
-pub struct DeleteBucketContentsRpc;
-impl Call for DeleteBucketContentsRpc {
+pub struct TruncateBucketRpc;
+impl Call for TruncateBucketRpc {
     const ID: ProcedureId = ProcedureId(0x000a_0003);
-    const NAME: &'static str = "frugalos.ctrl.delete_bucket_contents";
+    const NAME: &'static str = "frugalos.ctrl.truncate_bucket";
 
     type Req = BucketSeqnoRequest;
     type ReqEncoder = BincodeEncoder<Self::Req>;
