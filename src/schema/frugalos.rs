@@ -382,3 +382,25 @@ impl Call for SetRepairConfigRpc {
     type ResEncoder = BincodeEncoder<Self::Res>;
     type ResDecoder = BincodeDecoder<Self::Res>;
 }
+
+/// バケツのデータ削除要求
+/// バケツ削除処理でデータ削除処理が失敗した場合に実施を想定
+pub struct TruncateBucketRpc;
+impl Call for TruncateBucketRpc {
+    const ID: ProcedureId = ProcedureId(0x000a_0003);
+    const NAME: &'static str = "frugalos.ctrl.truncate_bucket";
+
+    type Req = BucketSeqnoRequest;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+}
+
+#[allow(missing_docs)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BucketSeqnoRequest {
+    pub bucket_seqno: u32,
+}
