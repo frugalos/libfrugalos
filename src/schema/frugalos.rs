@@ -404,3 +404,26 @@ impl Call for TruncateBucketRpc {
 pub struct BucketSeqnoRequest {
     pub bucket_seqno: u32,
 }
+
+/// デバイスの停止要求
+///
+/// デバイスが壊れたまま動いている場合に実施することを想定している。
+pub struct StopDeviceRpc;
+impl Call for StopDeviceRpc {
+    const ID: ProcedureId = ProcedureId(0x000a_0004);
+    const NAME: &'static str = "frugalos.ctrl.stop_device";
+
+    type Req = DeviceSeqnoRequest;
+    type ReqEncoder = BincodeEncoder<Self::Req>;
+    type ReqDecoder = BincodeDecoder<Self::Req>;
+
+    type Res = Result<()>;
+    type ResEncoder = BincodeEncoder<Self::Res>;
+    type ResDecoder = BincodeDecoder<Self::Res>;
+}
+
+#[allow(missing_docs)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeviceSeqnoRequest {
+    pub device_seqno: u32,
+}
