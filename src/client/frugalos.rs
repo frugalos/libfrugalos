@@ -282,4 +282,12 @@ impl Client {
                 .call(self.server, frugalos::BucketSeqnoRequest { bucket_seqno }),
         )
     }
+
+    /// Executes `StopDeviceRpc`
+    pub fn stop_device(&self, device_seqno: u32) -> impl Future<Item = (), Error = Error> {
+        Response(
+            frugalos::StopDeviceRpc::client(&self.rpc_service)
+                .call(self.server, frugalos::DeviceSeqnoRequest { device_seqno }),
+        )
+    }
 }
