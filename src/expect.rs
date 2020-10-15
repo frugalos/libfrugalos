@@ -1,6 +1,6 @@
 //! Compare-And-Swap用の構成要素。
-use entity::object::ObjectVersion;
-use {ErrorKind, Result};
+use crate::entity::object::ObjectVersion;
+use crate::{ErrorKind, Result};
 
 /// 操作対象オブジェクトに期待するバージョンを表現するためのデータ構造.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

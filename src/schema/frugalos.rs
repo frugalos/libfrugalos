@@ -5,17 +5,17 @@ use std::collections::BTreeSet;
 use std::ops::Range;
 use std::time::Duration;
 
-use consistency::ReadConsistency;
-use entity::bucket::BucketId;
-use entity::device::DeviceId;
-use entity::object::{
+use crate::consistency::ReadConsistency;
+use crate::entity::bucket::BucketId;
+use crate::entity::device::DeviceId;
+use crate::entity::object::{
     DeleteObjectsByPrefixSummary, FragmentsSummary, ObjectId, ObjectPrefix, ObjectSummary,
     ObjectVersion,
 };
-use expect::Expect;
-use multiplicity::MultiplicityConfig;
-use repair::RepairConfig;
-use Result;
+use crate::expect::Expect;
+use crate::multiplicity::MultiplicityConfig;
+use crate::repair::RepairConfig;
+use crate::Result;
 
 /// オブジェクト取得RPC。
 #[derive(Debug)]

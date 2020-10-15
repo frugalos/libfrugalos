@@ -5,11 +5,11 @@ use futures::{Async, Future, Poll};
 use std::net::SocketAddr;
 
 use super::Response;
-use entity::bucket::{Bucket, BucketId, BucketSummary};
-use entity::device::{Device, DeviceId, DeviceSummary};
-use entity::server::{Server, ServerId, ServerSummary};
-use schema::config;
-use {Error, ErrorKind, Result};
+use crate::entity::bucket::{Bucket, BucketId, BucketSummary};
+use crate::entity::device::{Device, DeviceId, DeviceSummary};
+use crate::entity::server::{Server, ServerId, ServerSummary};
+use crate::schema::config;
+use crate::{Error, ErrorKind, Result};
 
 /// RPCクライアント。
 #[derive(Debug)]

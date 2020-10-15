@@ -14,7 +14,7 @@ extern crate serde_derive;
 #[macro_use]
 extern crate trackable;
 
-pub use error::{Error, ErrorKind};
+pub use crate::error::{Error, ErrorKind};
 
 pub mod client;
 pub mod consistency;

@@ -4,13 +4,13 @@ use fibers_rpc::{Call, Cast, ProcedureId};
 use std::ops::Range;
 use std::time::Duration;
 
-use consistency::ReadConsistency;
-use entity::node::{LocalNodeId, RemoteNodeId};
-use entity::object::{
+use crate::consistency::ReadConsistency;
+use crate::entity::node::{LocalNodeId, RemoteNodeId};
+use crate::entity::object::{
     DeleteObjectsByPrefixSummary, Metadata, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
-use expect::Expect;
-use Result;
+use crate::expect::Expect;
+use crate::Result;
 
 /// Raftのリーダ取得RPC。
 #[derive(Debug)]

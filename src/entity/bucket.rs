@@ -1,7 +1,7 @@
 //! バケツ関連のエンティティ定義。
 use std::cmp;
 
-use entity::device::DeviceId;
+use crate::entity::device::DeviceId;
 
 // FIXME: 構造体に置き換える
 /// バケツのID。

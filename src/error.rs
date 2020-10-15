@@ -1,7 +1,6 @@
-use std;
 use trackable::error::{ErrorKind as TrackableErrorKind, ErrorKindExt, TrackableError};
 
-use entity::object::ObjectVersion;
+use crate::entity::object::ObjectVersion;
 
 /// クレート固有の`Error`型。
 #[derive(Debug, Clone, TrackableError, Serialize, Deserialize)]
