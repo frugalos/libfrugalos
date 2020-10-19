@@ -1,9 +1,8 @@
 //! RPCクライアント。
-use fibers_rpc;
 use futures::{Async, Future, Poll};
 use trackable::error::ErrorKindExt;
 
-use {Error, ErrorKind, Result};
+use crate::{Error, ErrorKind, Result};
 
 pub mod config;
 pub mod frugalos;

@@ -6,14 +6,14 @@ use std::ops::Range;
 use std::time::Duration;
 
 use super::Response;
-use consistency::ReadConsistency;
-use entity::node::{LocalNodeId, RemoteNodeId};
-use entity::object::{
+use crate::consistency::ReadConsistency;
+use crate::entity::node::{LocalNodeId, RemoteNodeId};
+use crate::entity::object::{
     DeleteObjectsByPrefixSummary, Metadata, ObjectId, ObjectPrefix, ObjectSummary, ObjectVersion,
 };
-use expect::Expect;
-use schema::mds;
-use {Error, ErrorKind, Result};
+use crate::expect::Expect;
+use crate::schema::mds;
+use crate::{Error, ErrorKind, Result};
 
 /// RPCクライアント。
 #[derive(Debug)]

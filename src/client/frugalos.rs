@@ -8,18 +8,18 @@ use std::ops::Range;
 use std::time::Duration;
 
 use super::Response;
-use consistency::ReadConsistency;
-use entity::bucket::BucketId;
-use entity::device::DeviceId;
-use entity::object::{
+use crate::consistency::ReadConsistency;
+use crate::entity::bucket::BucketId;
+use crate::entity::device::DeviceId;
+use crate::entity::object::{
     DeleteObjectsByPrefixSummary, FragmentsSummary, ObjectId, ObjectPrefix, ObjectSummary,
     ObjectVersion,
 };
-use expect::Expect;
-use multiplicity::MultiplicityConfig;
-use repair::RepairConfig;
-use schema::frugalos;
-use Error;
+use crate::expect::Expect;
+use crate::multiplicity::MultiplicityConfig;
+use crate::repair::RepairConfig;
+use crate::schema::frugalos;
+use crate::Error;
 
 /// RPCクライアント。
 #[derive(Debug)]

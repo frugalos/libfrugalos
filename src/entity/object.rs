@@ -1,6 +1,6 @@
 //! オブジェクト関連のエンティティ定義。
 use std::str::FromStr;
-use Error;
+use crate::Error;
 
 // FIXME: 構造体にする
 /// オブジェクトのID。

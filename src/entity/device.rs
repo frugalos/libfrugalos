@@ -1,11 +1,9 @@
 //! デバイス関連のエンティティ定義。
-use libc;
-use std;
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
-use entity::server::ServerId;
-use {Error, ErrorKind, Result};
+use crate::entity::server::ServerId;
+use crate::{Error, ErrorKind, Result};
 
 // FIXME: 構造体に置き換える
 /// デバイスのID。
@@ -91,11 +89,7 @@ impl Device {
 
     /// 仮想デバイスかどうかを判定する。
     pub fn is_virtual(&self) -> bool {
-        if let Device::Virtual(_) = *self {
-            true
-        } else {
-            false
-        }
+        matches!(self, Device::Virtual(_))
     }
 
     /// デバイスを保持しているサーバを返す。

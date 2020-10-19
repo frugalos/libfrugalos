@@ -3,10 +3,10 @@ use bytecodec::bincode_codec::{BincodeDecoder, BincodeEncoder};
 use fibers_rpc::{Call, ProcedureId};
 use std::net::SocketAddr;
 
-use entity::bucket::{Bucket, BucketId, BucketSummary};
-use entity::device::{Device, DeviceId, DeviceSummary};
-use entity::server::{Server, ServerId, ServerSummary};
-use Result;
+use crate::entity::bucket::{Bucket, BucketId, BucketSummary};
+use crate::entity::device::{Device, DeviceId, DeviceSummary};
+use crate::entity::server::{Server, ServerId, ServerSummary};
+use crate::Result;
 
 /// サーバ一覧取得RPC。
 #[derive(Debug)]
