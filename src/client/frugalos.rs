@@ -1,7 +1,7 @@
 //! Frugalosの公開API用のRPCクライアント。
 use fibers_rpc::client::ClientServiceHandle as RpcServiceHandle;
 use fibers_rpc::Call as RpcCall;
-use futures::Future;
+use futures03::Future;
 use std::collections::BTreeSet;
 use std::net::SocketAddr;
 use std::ops::Range;
@@ -19,7 +19,7 @@ use crate::expect::Expect;
 use crate::multiplicity::MultiplicityConfig;
 use crate::repair::RepairConfig;
 use crate::schema::frugalos;
-use crate::Error;
+use crate::Result;
 
 /// RPCクライアント。
 #[derive(Debug)]
@@ -44,7 +44,7 @@ impl Client {
         deadline: Duration,
         expect: Expect,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = Option<(ObjectVersion, Vec<u8>)>, Error = Error> {
+    ) -> impl Future<Output = Result<Option<(ObjectVersion, Vec<u8>)>>> {
         let request = frugalos::ObjectRequest {
             bucket_id,
             object_id,
@@ -61,7 +61,7 @@ impl Client {
         bucket_id: BucketId,
         segment: u16,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = Vec<ObjectSummary>, Error = Error> {
+    ) -> impl Future<Output = Result<Vec<ObjectSummary>>> {
         let request = frugalos::ListObjectsRequest {
             bucket_id,
             segment,
@@ -76,7 +76,7 @@ impl Client {
         bucket_id: BucketId,
         prefix: ObjectPrefix,
         deadline: Duration,
-    ) -> impl Future<Item = Vec<ObjectSummary>, Error = Error> {
+    ) -> impl Future<Output = Result<Vec<ObjectSummary>>> {
         let request = frugalos::PrefixRequest {
             bucket_id,
             prefix,
@@ -92,7 +92,7 @@ impl Client {
         &self,
         bucket_id: BucketId,
         segment: u16,
-    ) -> impl Future<Item = Option<ObjectSummary>, Error = Error> {
+    ) -> impl Future<Output = Result<Option<ObjectSummary>>> {
         let request = frugalos::SegmentRequest { bucket_id, segment };
         Response(
             frugalos::GetLatestVersionRpc::client(&self.rpc_service).call(self.server, request),
@@ -107,7 +107,7 @@ impl Client {
         deadline: Duration,
         expect: Expect,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = Option<FragmentsSummary>, Error = Error> {
+    ) -> impl Future<Output = Result<Option<FragmentsSummary>>> {
         let request = frugalos::CountFragmentsRequest {
             bucket_id,
             object_id,
@@ -127,7 +127,7 @@ impl Client {
         expect: Expect,
         consistency: ReadConsistency,
         check_storage: bool,
-    ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
+    ) -> impl Future<Output = Result<Option<ObjectVersion>>> {
         let request = frugalos::HeadObjectRequest {
             bucket_id,
             object_id,
@@ -148,7 +148,7 @@ impl Client {
         deadline: Duration,
         expect: Expect,
         multiplicity_config: MultiplicityConfig,
-    ) -> impl Future<Item = (ObjectVersion, bool), Error = Error> {
+    ) -> impl Future<Output = Result<(ObjectVersion, bool)>> {
         let request = frugalos::PutObjectRequest {
             bucket_id,
             object_id,
@@ -167,7 +167,7 @@ impl Client {
         object_id: ObjectId,
         deadline: Duration,
         expect: Expect,
-    ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
+    ) -> impl Future<Output = Result<Option<ObjectVersion>>> {
         let request = frugalos::ObjectRequest {
             bucket_id,
             object_id,
@@ -185,7 +185,7 @@ impl Client {
         segment: u16,
         object_version: ObjectVersion,
         deadline: Duration,
-    ) -> impl Future<Item = Option<ObjectVersion>, Error = Error> {
+    ) -> impl Future<Output = Result<Option<ObjectVersion>>> {
         let request = frugalos::VersionRequest {
             bucket_id,
             segment,
@@ -205,7 +205,7 @@ impl Client {
         segment: u16,
         targets: Range<ObjectVersion>,
         deadline: Duration,
-    ) -> impl Future<Item = Vec<ObjectSummary>, Error = Error> {
+    ) -> impl Future<Output = Result<Vec<ObjectSummary>>> {
         let request = frugalos::RangeRequest {
             bucket_id,
             segment,
@@ -223,7 +223,7 @@ impl Client {
         bucket_id: BucketId,
         prefix: ObjectPrefix,
         deadline: Duration,
-    ) -> impl Future<Item = DeleteObjectsByPrefixSummary, Error = Error> {
+    ) -> impl Future<Output = Result<DeleteObjectsByPrefixSummary>> {
         let request = frugalos::PrefixRequest {
             bucket_id,
             prefix,
@@ -241,7 +241,7 @@ impl Client {
         bucket_id: BucketId,
         device_id: DeviceId,
         object_ids: BTreeSet<ObjectId>,
-    ) -> impl Future<Item = (), Error = Error> {
+    ) -> impl Future<Output = Result<()>> {
         Response(
             frugalos::DeleteObjectSetFromDeviceRpc::client(&self.rpc_service).call(
                 self.server,
@@ -255,12 +255,12 @@ impl Client {
     }
 
     /// `StopRpc`を実行する。
-    pub fn stop(&self) -> impl Future<Item = (), Error = Error> {
+    pub fn stop(&self) -> impl Future<Output = Result<()>> {
         Response(frugalos::StopRpc::client(&self.rpc_service).call(self.server, ()))
     }
 
     /// `TakeSnapshotRpc`を実行する。
-    pub fn take_snapshot(&self) -> impl Future<Item = (), Error = Error> {
+    pub fn take_snapshot(&self) -> impl Future<Output = Result<()>> {
         Response(frugalos::TakeSnapshotRpc::client(&self.rpc_service).call(self.server, ()))
     }
 
@@ -268,7 +268,7 @@ impl Client {
     pub fn set_repair_config(
         &self,
         repair_config: RepairConfig,
-    ) -> impl Future<Item = (), Error = Error> {
+    ) -> impl Future<Output = Result<()>> {
         Response(
             frugalos::SetRepairConfigRpc::client(&self.rpc_service)
                 .call(self.server, repair_config),
@@ -276,7 +276,7 @@ impl Client {
     }
 
     /// Executes `TruncateBucketRpc`
-    pub fn truncate_bucket(&self, bucket_seqno: u32) -> impl Future<Item = (), Error = Error> {
+    pub fn truncate_bucket(&self, bucket_seqno: u32) -> impl Future<Output = Result<()>> {
         Response(
             frugalos::TruncateBucketRpc::client(&self.rpc_service)
                 .call(self.server, frugalos::BucketSeqnoRequest { bucket_seqno }),
