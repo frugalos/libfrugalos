@@ -14,10 +14,17 @@ travis-ci = {repository = "frugalos/libfrugalos"}
 
 [dependencies]
 bytecodec = { version = "0.4", features = ["bincode_codec"] }
-fibers = "0.1"
 fibers_rpc = "0.3"
 futures = "0.1"
 libc = "0.2"
+pin-project = "1"
 serde = "1"
 serde_derive = "1"
-trackable = { version = "0.2", features = ["serialize"] }
+trackable = { version = "1", features = ["serialize"] }
+futures03 = { package = "futures", version = "0.3" }
+
+
+[patch.crates-io]
+fibers = { git = "https://github.com/dwango/fibers-rs", branch = "feature/tokio-1.0" }
+fibers_rpc = { git = "https://github.com/koba-e964/fibers_rpc", branch = "feature/tokio-1.0" }
+trackable = { git = "https://github.com/koba-e964/trackable", branch = "feature/trackable-for-poll"}

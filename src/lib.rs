@@ -3,7 +3,6 @@
 //! [frugalos]: https://github.com/frugalos/frugalos
 #![warn(missing_docs)]
 extern crate bytecodec;
-extern crate fibers;
 extern crate fibers_rpc;
 extern crate futures;
 extern crate libc;

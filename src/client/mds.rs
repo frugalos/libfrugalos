@@ -1,8 +1,11 @@
 //! MDS(metadata store)用のRPCクライアント。
 use fibers_rpc::client::ClientServiceHandle as RpcServiceHandle;
 use fibers_rpc::{Call as RpcCall, Cast as RpcCast};
-use futures::{Async, Future, Poll};
+use futures03::{future::OptionFuture, Future};
+use pin_project::pin_project;
 use std::ops::Range;
+use std::pin::Pin;
+use std::task::{Context, Poll};
 use std::time::Duration;
 
 use super::Response;
@@ -13,7 +16,7 @@ use crate::entity::object::{
 };
 use crate::expect::Expect;
 use crate::schema::mds;
-use crate::{Error, ErrorKind, Result};
+use crate::{ErrorKind, Result};
 
 /// RPCクライアント。
 #[derive(Debug)]
@@ -37,7 +40,7 @@ impl Client {
     pub fn list_objects(
         &self,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Vec<ObjectSummary>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Vec<ObjectSummary>)>> {
         let request = mds::ListObjectsRequest {
             node_id: self.node.1.clone(),
             consistency,
@@ -49,7 +52,7 @@ impl Client {
     pub fn list_objects_by_prefix(
         &self,
         prefix: ObjectPrefix,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Vec<ObjectSummary>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Vec<ObjectSummary>)>> {
         let request = mds::PrefixRequest {
             node_id: self.node.1.clone(),
             prefix,
@@ -60,7 +63,7 @@ impl Client {
     /// `GetLatestVersionRpc`を実行する。
     pub fn latest_version(
         &self,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectSummary>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Option<ObjectSummary>)>> {
         Call::<mds::GetLatestVersionRpc, _>::new(self, self.node.1.clone())
     }
 
@@ -68,7 +71,7 @@ impl Client {
     pub fn object_count(
         &self,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, u64), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, u64)>> {
         let request = mds::ObjectCountRequest {
             node_id: self.node.1.clone(),
             consistency,
@@ -82,7 +85,7 @@ impl Client {
         id: ObjectId,
         expect: Expect,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Option<Metadata>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Option<Metadata>)>> {
         let request = mds::ObjectRequest {
             node_id: self.node.1.clone(),
             object_id: id,
@@ -98,7 +101,7 @@ impl Client {
         id: ObjectId,
         expect: Expect,
         consistency: ReadConsistency,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectVersion>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Option<ObjectVersion>)>> {
         let request = mds::ObjectRequest {
             node_id: self.node.1.clone(),
             object_id: id,
@@ -115,7 +118,7 @@ impl Client {
         metadata: Vec<u8>,
         expect: Expect,
         put_content_timeout: Duration,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, (ObjectVersion, Option<ObjectVersion>)), Error = Error>
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, (ObjectVersion, Option<ObjectVersion>))>>
     {
         let request = mds::PutObjectRequest {
             node_id: self.node.1.clone(),
@@ -132,7 +135,7 @@ impl Client {
         &self,
         id: ObjectId,
         expect: Expect,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectVersion>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Option<ObjectVersion>)>> {
         let request = mds::ObjectRequest {
             node_id: self.node.1.clone(),
             object_id: id,
@@ -146,7 +149,7 @@ impl Client {
     pub fn delete_object_by_version(
         &self,
         version: ObjectVersion,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Option<ObjectVersion>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Option<ObjectVersion>)>> {
         let request = mds::VersionRequest {
             node_id: self.node.1.clone(),
             object_version: version,
@@ -158,7 +161,7 @@ impl Client {
     pub fn delete_by_range(
         &self,
         targets: Range<ObjectVersion>,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, Vec<ObjectSummary>), Error = Error> {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, Vec<ObjectSummary>)>> {
         let request = mds::RangeRequest {
             node_id: self.node.1.clone(),
             targets,
@@ -170,8 +173,7 @@ impl Client {
     pub fn delete_by_prefix(
         &self,
         prefix: ObjectPrefix,
-    ) -> impl Future<Item = (Option<RemoteNodeId>, DeleteObjectsByPrefixSummary), Error = Error>
-    {
+    ) -> impl Future<Output = Result<(Option<RemoteNodeId>, DeleteObjectsByPrefixSummary)>> {
         let request = mds::PrefixRequest {
             node_id: self.node.1.clone(),
             prefix,
@@ -224,13 +226,17 @@ impl SetNodeId for mds::PutObjectRequest {
     }
 }
 
+#[pin_project]
 #[derive(Debug)]
 struct Call<T: RpcCall, U> {
     node: RemoteNodeId,
     rpc_service: RpcServiceHandle,
-    leader: Option<Response<RemoteNodeId>>,
+    #[pin]
+    leader: OptionFuture<Response<RemoteNodeId>>,
+    is_leader: bool,
     request: T::Req,
-    response: Option<Response<U>>,
+    #[pin]
+    response: OptionFuture<Response<U>>,
     retried_count: usize,
 }
 impl<T: RpcCall, U> Call<T, U>
@@ -246,9 +252,10 @@ where
         Call {
             node: client.node.clone(),
             rpc_service: client.rpc_service.clone(),
-            leader: None,
+            leader: None.into(),
+            is_leader: false,
             request,
-            response: Some(Response(future)),
+            response: Some(Response(future)).into(),
             retried_count: 0,
         }
     }
@@ -261,47 +268,57 @@ where
     T::ReqEncoder: Default,
     T::ResDecoder: Default,
 {
-    type Item = (Option<RemoteNodeId>, U);
-    type Error = Error;
+    type Output = Result<(Option<RemoteNodeId>, U)>;
 
-    fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
         loop {
-            match self.response.poll() {
-                Err(e) => {
+            let mut this = self.as_mut().project();
+            match this.response.as_mut().poll(cx) {
+                Poll::Ready(Some(Err(e))) => {
                     if *e.kind() == ErrorKind::NotLeader {
-                        track_assert!(
-                            self.retried_count < 2,
-                            ErrorKind::Unavailable,
-                            "Unstable cluster: RPC={}",
-                            T::NAME
-                        );
+                        if let Err(e) = (|| {
+                            track_assert!(
+                                *this.retried_count < 2,
+                                ErrorKind::Unavailable,
+                                "Unstable cluster: RPC={}",
+                                T::NAME
+                            );
+                            Ok(())
+                        })() {
+                            return Poll::Ready(Err(e));
+                        }
 
-                        self.retried_count += 1;
-                        let future = mds::GetLeaderRpc::client(&self.rpc_service)
-                            .call(self.node.0, self.node.1.clone());
-                        self.leader = Some(Response(future));
-                        self.response = None;
+                        *this.retried_count += 1;
+                        let future = mds::GetLeaderRpc::client(&this.rpc_service)
+                            .call(this.node.0, this.node.1.clone());
+                        this.leader.set(Some(Response(future)).into());
+                        *this.is_leader = true;
+                        this.response.set(None.into());
                     } else {
-                        return Err(track!(e, T::NAME));
+                        return Poll::Ready(Err(track!(e, T::NAME)));
                     }
                 }
-                Ok(Async::NotReady) => break,
-                Ok(Async::Ready(None)) => {}
-                Ok(Async::Ready(Some(response))) => {
-                    let new_leader = self.leader.as_ref().map(|_| self.node.clone());
-                    return Ok(Async::Ready((new_leader, response)));
+                Poll::Pending => break,
+                Poll::Ready(None) => {}
+                Poll::Ready(Some(Ok(response))) => {
+                    let new_leader = if *this.is_leader {
+                        Some(this.node.clone())
+                    } else {
+                        None
+                    };
+                    return Poll::Ready(Ok((new_leader, response)));
                 }
             }
 
-            if let Async::Ready(Some(leader)) = track!(self.leader.poll())? {
-                self.node = leader;
-                self.request.set_node_id(self.node.1.clone());
-                let future = T::client(&self.rpc_service).call(self.node.0, self.request.clone());
-                self.response = Some(Response(future));
+            if let Poll::Ready(Some(leader)) = track!(this.leader.poll(cx))? {
+                *this.node = leader;
+                this.request.set_node_id(this.node.1.clone());
+                let future = T::client(&this.rpc_service).call(this.node.0, this.request.clone());
+                this.response.set(Some(Response(future)).into());
             } else {
                 break;
             }
         }
-        Ok(Async::NotReady)
+        Poll::Pending
     }
 }
